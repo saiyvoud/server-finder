@@ -3,7 +3,20 @@ import mongoose from "mongoose";
 import FollowModel from "../models/follow.model.js";
 
 export default class Follow {
-  static async getFollow(req, res) {
+  static async getFollowShop(req, res) {
+    try {
+      const shop_id = req.params._id
+      if (!mongoose.isValidObjectId(shop_id)) {
+        return res.status(404).json({ msg: "Invalid ID" });
+      }
+
+      const follow = await FollowModel.find({ shop: shop_id }).populate('user','firstname lastname');
+      res.status(201).json({ msg: "all are following you shop now.", follow });
+    } catch (err) {
+      res.status(404).json({ msg: "Something Wrong.", err });
+    }
+  }
+  static async getFollowUser(req, res) {
     try {
       if (!req.user) {
         return res.status(400).json({ msg: "Please Login!!!" });

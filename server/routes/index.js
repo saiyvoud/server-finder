@@ -1,5 +1,5 @@
 import express from "express";
-import formidable from 'express-formidable'
+import formidable from "express-formidable";
 
 // ================ import controller ================
 import UserController from "../controllers/user.controller.js";
@@ -9,6 +9,12 @@ import AddressController from "../controllers/address.controller.js";
 import CarController from "../controllers/car.controller.js";
 import FollowController from "../controllers/follow.controller.js";
 import ImageController from "../controllers/uploadImage.controller.js";
+import ReviewController from "../controllers/review.controller.js";
+import ReportController from "../controllers/report.controller.js";
+import BannerController from "../controllers/banner.controller.js";
+import OrderController from "../controllers/order.controller.js";
+import PaymentController from "../controllers/payment.controller.js";
+import NotifController from "../controllers/notification.controller.js";
 
 // ================ import middleware ================
 import { auth } from "../middlewares/auth.js";
@@ -26,9 +32,9 @@ route.post("/user/login", UserController.logIn);
 route.post("/upgrade-user/:_id", auth, admin, UserController.upgradeUser);
 
 //Upload Image
-route.post('/user/upload-image', auth, formidable(), ImageController.uploadUserImage)
-route.post('/shop/upload-image/:_id', auth, formidable(), ImageController.uploadShopImage)
-route.post('/service/upload-image/:_id', auth, formidable(), ImageController.uploadServiceImage)
+route.post("/user/upload-image", auth, ImageController.uploadUserImage);
+route.post("/shop/upload-image", auth, ImageController.uploadShopImage);
+route.post("/service/upload-image", auth, ImageController.uploadServiceImage);
 
 // ================== Shop ============================
 route.get("/shops", ShopController.AllShop);
@@ -52,7 +58,7 @@ route.delete(
 
 // ================== Address ==================
 route.get("/addresses", AddressController.getAddressAll);
-route.get("/address/:_id",  AddressController.getAddressOne);
+route.get("/address/:_id", AddressController.getAddressOne);
 route.post("/address", auth, AddressController.createAddress);
 
 // ================== Car ==================
@@ -62,8 +68,82 @@ route.put("/car", auth, CarController.updateCar);
 route.delete("/car/:_id", auth, CarController.deleteCar);
 
 // ================== Follow ================
-route.get("/follow", auth, FollowController.getFollow);
+route.get("/follow/shop/:_id", auth, FollowController.getFollowShop);
+route.get("/follow/user", auth, FollowController.getFollowUser);
 route.post("/follow/:_id", auth, FollowController.followShop);
 route.delete("/unfollow/:_id", auth, FollowController.unFollow);
+
+// ================== Review ====================
+route.get("/review/:_id", auth, ReviewController.getShopReview);
+route.get("/review-user", auth, ReviewController.getUserReview);
+route.post("/review", auth, ReviewController.addReview);
+
+// ================== Report ====================
+route.get("/reports", auth, admin, ReportController.getAllReport);
+route.get("/report/:_id", auth, shopkeeper, ReportController.getShopReport);
+route.get("/report-user", auth, ReportController.getUserReport);
+route.post("/report", auth, ReportController.addReport);
+route.put("/report", auth, ReportController.updateReport);
+route.delete("/report/:_id", auth, ReportController.unReport);
+
+// ==================== Banner ====================
+route.get("/banner", auth, admin, BannerController.getAllBanner);
+route.post("/banner", auth, admin, BannerController.createBanner);
+route.put("/banner", auth, admin, BannerController.updateBanner);
+route.delete("/banner/:_id", auth, admin, BannerController.deleteBanner);
+
+// ==================== Order ====================
+route.get("/orders", auth, admin, OrderController.getOrderAll);
+route.get("/order/user", auth, OrderController.getOrderUser);
+route.get("/order/shop/:_id", auth, shopkeeper, OrderController.getOrderShop);
+route.post("/order", auth, OrderController.addOrder);
+route.delete("/order", auth, OrderController.cancelOrder);
+// =================== Order Detail =====================
+route.get("/order-detail/:_id", auth, OrderController.getOrderDetail);
+
+// ==================== Payment ====================
+route.get("/payments", auth, admin, PaymentController.getAllPayment);
+route.get(
+  "/payment/shop/:_id",
+  auth,
+  shopkeeper,
+  PaymentController.getShopPayment
+);
+route.post("/payment", auth, PaymentController.confirmPayment);
+route.delete("/payment", auth, PaymentController.cancelPayment);
+//===================== Invoice =====================
+route.get("/invoices", auth, admin, PaymentController.getInvoiceAll);
+route.get(
+  "/invoice/shop/:_id",
+  auth,
+  shopkeeper,
+  PaymentController.getInvoiceShop
+);
+route.post(
+  "/transfer/request/:_id",
+  auth,
+  shopkeeper,
+  PaymentController.requestTransfer
+);
+route.post(
+  "/transfer/confirm/:_id",
+  auth,
+  shopkeeper,
+  PaymentController.confirmTransfer
+);
+
+// ================== Notification ====================
+route.get("/notifications", auth, admin, NotifController.NotifAll);
+route.get("/notification/admin", auth, admin, NotifController.NotifAdmin);
+route.get(
+  "/notification/shop/:_id",
+  auth,
+  shopkeeper,
+  NotifController.NotifShop
+);
+route.get("/notification/user", NotifController.NotifUser);
+route.post("/notification", auth, admin, NotifController.postNotif);
+route.put("/notification", auth, admin, NotifController.updateNotif);
+route.delete("/notification/:_id", auth, admin, NotifController.removeNotif);
 
 export default route;

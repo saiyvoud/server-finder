@@ -17,13 +17,13 @@ const serviceSchema = mongoose.Schema({
   },
   category:{
     type:String,
-    enum:['ລົດຈັກ', 'ລົດໃຫຍ່'],
+    enum:['ລົດຈັກ', 'ລົດໃຫຍ່', 'car', 'motorcycle', 'motorbike'],
     maxlength:20
   },
   price: {
     type: Number,
     required: true,
-    min: 0
+    min: 1000
   },
   description: {
     type: String,
@@ -36,6 +36,6 @@ const serviceSchema = mongoose.Schema({
   }
 });
 
-const Service = mongoose.model("Serivce", serviceSchema);
+const Service = mongoose.model("Service", serviceSchema);
 
 export default Service 

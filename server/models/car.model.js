@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const carSchema = mongoose.Schema(
   {
+    user:{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -10,7 +15,7 @@ const carSchema = mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["ລົດຈັກ", "ລົດໃຫຍ່"],
+      enum: ["ລົດຈັກ", "ລົດໃຫຍ່", "car", "motorcycle", "motorbike"],
       maxlength: 20,
     },
     brand: {

@@ -72,8 +72,10 @@ export default class Service {
     try {
       let data = req.body;
 
-      if (!mongoose.isValidObjectId(data._id))
-        res.json({ msg: `Invalid id: ${data._id}` });
+      if (!mongoose.isValidObjectId(data.service_id))
+        res.json({ msg: `Invalid id: ${data.service_id}` });
+
+        data.image = undefined
 
       const service = await ServiceController.findByIdAndUpdate(
         { _id: data.service_id },
