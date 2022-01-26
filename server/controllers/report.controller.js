@@ -49,7 +49,7 @@ export default class Report {
         {
           path: "order",
           model: "Order",
-          select: 'description totalCost'
+          select: "description totalCost",
         },
         { path: "shop", model: "Shop", select: "name tel" },
       ]);
@@ -61,19 +61,35 @@ export default class Report {
 
   static async addReport(req, res) {
     try {
-      let data = req.body;
+      let { shop_id, order_id, title, body } = req.body;
 
-      data = {
-        ...data,
-        shop: data.shop_id,
-        order: data.order_id,
+      if (!title) {
+        return res.status(400).json({ msg: "title field is required." });
+      }
+      if (!body) {
+        return res.status(400).json({ msg: "body field is required." });
+      }
+
+      if (!mongoose.isValidObjectId(order_id) || !order_id) {
+        return res.status(404).json({ msg: "Invalid order ID" });
+      }
+      if (!mongoose.isValidObjectId(shop_id) || !shop_id) {
+        return res.status(404).json({ msg: "Invalid shop ID" });
+      }
+
+      const data = {
+        shop: shop_id,
+        order: order_id,
         user: req.user._id,
+        title,
+        body,
       };
 
       const report = await ReportModel.create(data);
 
       res.status(201).json({ msg: "Add New Report", report });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
@@ -82,6 +98,13 @@ export default class Report {
     try {
       const { report_id, title, body } = req.body;
       const user_id = req.user._id;
+
+      if (!title) {
+        return res.status(400).json({ msg: "title field is required." });
+      }
+      if (!body) {
+        return res.status(400).json({ msg: "body field is required." });
+      }
 
       if (!mongoose.isValidObjectId(report_id) || report_id === "")
         res.status(400).json({ msg: "Something wrong" });

@@ -1,15 +1,17 @@
-import mongoose  from "mongoose";
-import { ReviewModel }  from "../models/review.model.js";
+import mongoose from "mongoose";
+import { ReviewModel } from "../models/review.model.js";
 export default class Review {
   static async getShopReview(req, res) {
-    try {      
+    try {
       const shop_id = req.params._id;
 
       if (!mongoose.isValidObjectId(shop_id))
         res.status(400).json({ msg: "Something wrong" });
 
-      const review = await ReviewModel.find({ shop: shop_id })
-      .populate( "user", "firstname lastname" );
+      const review = await ReviewModel.find({ shop: shop_id }).populate(
+        "user",
+        "firstname lastname"
+      );
       res.status(200).json({ msg: "Get Shop Review", review });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
@@ -22,7 +24,7 @@ export default class Review {
 
       const review = await ReviewModel.find({
         user: user_id,
-      }).populate( "shop", "name title star" );
+      }).populate("shop", "name title star");
       res.status(200).json({ msg: "Get User Review", review });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
@@ -31,9 +33,20 @@ export default class Review {
 
   static async addReview(req, res) {
     try {
-      let data = req.body;
+      let { shop_id, star, title } = req.body;
 
-      data = { ...data, shop: data.shop_id, user: req.user._id };
+      if (!title) {
+        return res.status(400).json({ msg: "title field is required." });
+      }
+      if (!star || star < 0) {
+        return res.status(400).json({ msg: "star field is required or less then 0." });
+      }
+
+      if (!mongoose.isValidObjectId(shop_id) || !shop_id) {
+        return res.status(404).json({ msg: "Invalid shop ID" });
+      }
+
+      const data = { shop: shop_id, user: req.user._id, star, title };
 
       const review = await ReviewModel.create(data);
 
