@@ -54,28 +54,69 @@ export default class Service {
 
   static async postService(req, res) {
     try {
-      let data = req.body;
-      if (!mongoose.isValidObjectId(data.shop_id))
-        return res.status(400).json({ msg: `Invalid id: ${data.shop_id}` });
+      let { shop_id, name, category, price, description, imgFile } = req.body;
 
-      const imgUrl = await UploadImage(data.image)
+      if (!name) {
+        return res.status(400).json({ msg: "name field is required." });
+      }
+      if (!category) {
+        return res.status(400).json({ msg: "category field is required." });
+      }
+      if (!price) {
+        return res.status(400).json({ msg: "price field is required." });
+      }
+      if (!description) {
+        return res.status(400).json({ msg: "description field is required." });
+      }
 
-      data = { ...data, shop: data.shop_id, image: imgUrl };
+      if (!mongoose.isValidObjectId(shop_id))
+        return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+
+      if (imgFile) {
+        var imgUrl = await UploadImage(imgFile);
+      }
+
+      const data = {
+        shop: shop_id,
+        image: imgUrl,
+        name,
+        category,
+        price,
+        description,
+      };
       const service = await ServiceController.create(data);
       res.status(201).json({ service });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something Wrong.", err });
     }
   }
 
   static async updateService(req, res) {
     try {
-      let data = req.body;
+      let { service_id, name, category, price, description, imgFile } = req.body;
 
-      if (!mongoose.isValidObjectId(data.service_id))
-        res.json({ msg: `Invalid id: ${data.service_id}` });
+      if (!name) {
+        return res.status(400).json({ msg: "name field is required." });
+      }
+      if (!category) {
+        return res.status(400).json({ msg: "category field is required." });
+      }
+      if (!price) {
+        return res.status(400).json({ msg: "price field is required." });
+      }
+      if (!description) {
+        return res.status(400).json({ msg: "description field is required." });
+      }
 
-        data.image = undefined
+      if (!mongoose.isValidObjectId(service_id))
+        return res.status(400).json({ msg: `Invalid id: ${service_id}` });
+
+      if (imgFile) {
+        var imgUrl = await UploadImage(imgFile);
+      }
+      
+      const data = {name, category, price, description}
 
       const service = await ServiceController.findByIdAndUpdate(
         { _id: data.service_id },
