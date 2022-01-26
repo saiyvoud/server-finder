@@ -38,13 +38,64 @@ export default class Shop {
 
   static async createShop(req, res) {
     try {
-      let data = req.body;
       let user_id = req.user._id;
-      const bank_data = data.bank;
+      let { name, imgFile, phone, bank, address, openTime, closeTime } =
+        req.body;
 
-      const imgUrl = await UploadImage(data.image);
+      if (!name) {
+        return res.status(400).json({ msg: "name field is required." });
+      }
+      if (!phone) {
+        return res.status(400).json({ msg: "phone field is required." });
+      }
+      if (!bank) {
+        return res.status(400).json({ msg: "bank field is required." });
+      }
+      if (!address) {
+        return res.status(400).json({ msg: "address field is required." });
+      }
+      if (!openTime) {
+        return res.status(400).json({ msg: "openTime field is required." });
+      }
+      if (!closeTime) {
+        return res.status(400).json({ msg: "closeTime field is required." });
+      }
 
-      const bank = await BankModel.create(bank_data);
+      if (!bank.bankName) {
+        return res
+          .status(400)
+          .json({ msg: "bank( bankName field is required.)" });
+      }
+      if (!bank.accountId) {
+        return res
+          .status(400)
+          .json({ msg: "bank( accountId field is required.)" });
+      }
+      if (!bank.accountName) {
+        return res
+          .status(400)
+          .json({ msg: "bank( accountName field is required.)" });
+      }
+
+      if (!address.village) {
+        return res.status(400).json({ msg: "village field is required." });
+      }
+      if (!address.district) {
+        return res.status(400).json({ msg: "district field is required." });
+      }
+      if (!address.province) {
+        return res.status(400).json({ msg: "province field is required." });
+      }
+      if (!address.lat) {
+        return res.status(400).json({ msg: "lat field is required." });
+      }
+      if (!address.lng) {
+        return res.status(400).json({ msg: "lng field is required." });
+      }
+
+      const imgUrl = await UploadImage(imgFile);
+
+      const banks = await BankModel.create(bank);
 
       if (req.user.auth === "admin") {
         if (!mongoose.isValidObjectId(data.user_id))
@@ -52,7 +103,16 @@ export default class Shop {
         user_id = data.user_id;
       }
 
-      data = { ...data, user: user_id, bankAccount: bank._id, image: imgUrl };
+      const data = {
+        user: user_id,
+        name,
+        phone,
+        openTime,
+        closeTime,
+        address,
+        bankAccount: banks._id,
+        image: imgUrl,
+      };
 
       const shop = await ShopModel.create(data);
 
@@ -71,10 +131,76 @@ export default class Shop {
 
   static async updateShop(req, res) {
     try {
-      const data = req.body;
+      let {shop_id, name, imgFile, phone, bank, address, openTime, closeTime } =
+        req.body;
 
-      if (!mongoose.isValidObjectId(data.shop_id))
-        return res.status(400).json({ msg: `Invalid id: ${data.shop_id}` });
+      if (!name) {
+        return res.status(400).json({ msg: "name field is required." });
+      }
+      if (!phone) {
+        return res.status(400).json({ msg: "phone field is required." });
+      }
+      if (!bank) {
+        return res.status(400).json({ msg: "bank field is required." });
+      }
+      if (!address) {
+        return res.status(400).json({ msg: "address field is required." });
+      }
+      if (!openTime) {
+        return res.status(400).json({ msg: "openTime field is required." });
+      }
+      if (!closeTime) {
+        return res.status(400).json({ msg: "closeTime field is required." });
+      }
+
+      if (!bank.bankName) {
+        return res
+          .status(400)
+          .json({ msg: "bank( bankName field is required.)" });
+      }
+      if (!bank.accountId) {
+        return res
+          .status(400)
+          .json({ msg: "bank( accountId field is required.)" });
+      }
+      if (!bank.accountName) {
+        return res
+          .status(400)
+          .json({ msg: "bank( accountName field is required.)" });
+      }
+
+      if (!address.village) {
+        return res.status(400).json({ msg: "village field is required." });
+      }
+      if (!address.district) {
+        return res.status(400).json({ msg: "district field is required." });
+      }
+      if (!address.province) {
+        return res.status(400).json({ msg: "province field is required." });
+      }
+      if (!address.lat) {
+        return res.status(400).json({ msg: "lat field is required." });
+      }
+      if (!address.lng) {
+        return res.status(400).json({ msg: "lng field is required." });
+      }
+
+      if(imgFile){
+        var imgUrl = await UploadImage(imgFile);
+      }     
+
+      if (!mongoose.isValidObjectId(shop_id) || shop_id === '')
+        return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+      const data = {
+        user: user_id,
+        name,
+        phone,
+        openTime,
+        closeTime,
+        address,
+        bankAccount: banks._id,
+        image: imgUrl,
+      };
 
       const shop = await ShopModel.findOneAndUpdate(
         { _id: data.shop_id },

@@ -41,7 +41,7 @@ const shopSchema = mongoose.Schema(
         maxlength: 200,
         required: true
       },
-      proivce: {
+      province: {
         type: String,
         maxlength: 200,
         required: true
