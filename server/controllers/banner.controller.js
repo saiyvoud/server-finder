@@ -15,6 +15,10 @@ export default class Review {
     try {
       let data = req.body;
 
+      if(!data){
+        return res.status(400).json({msg:"Please input data"})
+      }
+
       const imgURL = await UploadImage(data.imgFile)
       
       data = {...data, image: imgURL}

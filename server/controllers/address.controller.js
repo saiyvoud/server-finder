@@ -28,6 +28,12 @@ export default class Address {
   static async createAddress(req, res) {
     try {
       let data = req.body;
+
+      if(!data){
+        return res.status(400).json({msg:"Please input data"})
+      }
+
+      console.log(data)
       
       data = { ...data, user: req.user._id };
       await AddressModel.update({user: req.user._id, isActive: true}, {isActive: false}, {new: true})

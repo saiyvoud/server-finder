@@ -104,7 +104,9 @@ class UserController {
             .json({ msg: "Invalid username, email or password" });
         user.generateToken((err, user) => {
           if (err) return res.status(404).json({ err });
-          res.cookie("g_auth", user.token).json({ msg: "Login Complete" });
+          
+          // res.cookie("g_auth", user.token).json({ msg: "Login Complete", token: user.token });
+          res.status(200).json({ msg: "Login Complete", token: user.token });
         });
       });
     } catch (err) {

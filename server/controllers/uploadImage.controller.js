@@ -18,7 +18,7 @@ export default class uploadImage {
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload complete" });
+      res.status(200).json({ msg: "upload complete", imgUrl  });
     } catch (err) {
       console.log(err)
       res.status(500).json({ err: "Something went wrong" });
@@ -44,7 +44,7 @@ export default class uploadImage {
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload complete" });
+      res.status(200).json({ msg: "upload complete", imgUrl  });
     } catch (err) {
       console.log(err);
       res.status(500).json({ err: "Something went wrong" });
@@ -63,7 +63,7 @@ export default class uploadImage {
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload complete" });
+      res.status(200).json({ msg: "upload complete", imgUrl });
     } catch (err) {
       res.status(500).json({ err: "Something went wrong" });
     }
