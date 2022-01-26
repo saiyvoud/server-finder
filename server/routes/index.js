@@ -34,6 +34,7 @@ route.post("/upgrade-user/:_id", auth, UserController.upgradeUser);
 //Upload Image
 route.post("/user/upload-image", auth, ImageController.uploadUserImage);
 route.post("/shop/upload-image", auth, ImageController.uploadShopImage);
+route.post("/shop/upload-cover-image", auth, ImageController.uploadShopCoverImage);
 route.post("/service/upload-image", auth, ImageController.uploadServiceImage);
 
 // ================== Shop ============================

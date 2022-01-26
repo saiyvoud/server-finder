@@ -18,7 +18,7 @@ export default class uploadImage {
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload complete", imgUrl  });
+      res.status(200).json({ msg: "upload user image complete", imgUrl  });
     } catch (err) {
       console.log(err)
       res.status(500).json({ err: "Something went wrong" });
@@ -44,7 +44,33 @@ export default class uploadImage {
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload complete", imgUrl  });
+      res.status(200).json({ msg: "upload shop image complete", imgUrl  });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ err: "Something went wrong" });
+    }
+  }
+
+  static async uploadShopCoverImage(req, res) {
+    try {
+      const { shop_id, imgFile } = req.body;
+
+      if (!mongoose.isValidObjectId(shop_id))
+        return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+
+      const imgUrl = await UploadImage(imgFile);
+      // const res_upload = await cloudinary.uploader.upload(fileStr, null, {
+      //   public_id: `${Date.now()}`,
+      //   resource_type: "auto",
+      // });
+
+      await Shop.findByIdAndUpdate(
+        shop_id,
+        { $push:{coverImage: imgUrl} },
+        { new: true }
+      );
+
+      res.status(200).json({ msg: "upload shop cover image complete", imgUrl  });
     } catch (err) {
       console.log(err);
       res.status(500).json({ err: "Something went wrong" });
@@ -63,7 +89,7 @@ export default class uploadImage {
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload complete", imgUrl });
+      res.status(200).json({ msg: "upload service image complete", imgUrl });
     } catch (err) {
       res.status(500).json({ err: "Something went wrong" });
     }
