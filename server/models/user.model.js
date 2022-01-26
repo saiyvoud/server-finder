@@ -12,21 +12,23 @@ const SALT_I = parseInt(process.env.SALT) || 10;
 const userSchema = mongoose.Schema({
     firstname: {
         type: String, 
-        maxlength: 255
+        maxlength: 255,
+        required: true
     }, 
     lastname: {
         type: String, 
-        maxlength: 255
+        maxlength: 255,
+        required: true
     },
     username: {
         type: String, 
         unique: 1,
-        maxlength: 255
+        maxlength: 255,
+        required: true
     }, 
     email: {
         type: String,
-        unique: 1,
-        trim: true
+        default:''
     }, 
     password: {
         type: String,
@@ -54,12 +56,6 @@ const userSchema = mongoose.Schema({
         type: String
     },
     fbToken: {
-        type: String
-    },
-    appleId:{
-        type: String
-    },
-    appleToken: {
         type: String
     },
     googleId:{

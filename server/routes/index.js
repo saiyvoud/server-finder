@@ -39,7 +39,7 @@ route.post("/service/upload-image", auth, ImageController.uploadServiceImage);
 // ================== Shop ============================
 route.get("/shops", ShopController.AllShop);
 route.get("/shop/owner", auth, shopkeeper, ShopController.OwnShop);
-route.post("/shop", auth, shopkeeper, ShopController.createShop);
+route.post("/shop", auth, ShopController.createShop);
 route.put("/shop", auth, shopkeeper, ShopController.updateShop);
 route.delete("/shop/:shop_id", auth, admin, ShopController.deleteShop);
 

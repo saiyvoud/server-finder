@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import ShopModel from "../models/shop.model.js";
 import BankModel from "../models/bankAccount.model.js";
 import UploadImage from "../utils/uploadImage.js";
+import { User } from "../models/user.model.js";
 
 export default class Shop {
   static async AllShop(req, res) {
@@ -41,7 +42,7 @@ export default class Shop {
       let user_id = req.user._id;
       const bank_data = data.bank;
 
-      const imgUrl = await UploadImage(data.image)
+      const imgUrl = await UploadImage(data.image);
 
       const bank = await BankModel.create(bank_data);
 
@@ -54,6 +55,13 @@ export default class Shop {
       data = { ...data, user: user_id, bankAccount: bank._id, image: imgUrl };
 
       const shop = await ShopModel.create(data);
+
+      await User.findByIdAndUpdate(
+        user_id,
+        { auth: "shopkeeper" },
+        { new: true }
+      );
+
       res.status(201).json({ msg: "Create new shop complete.", shop });
     } catch (err) {
       console.log(err);

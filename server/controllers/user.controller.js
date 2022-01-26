@@ -40,6 +40,7 @@ class UserController {
   static async signUp(req, res) {
 
     let { firstname, lastname, username, email, password, phone } = req.body;
+    
     // let phone = "+85620" + user_data.phone.substr(user_data.phone.length - 8, 8);
     try {
       //   const userNew = new User({...user_data, phone});
@@ -58,6 +59,29 @@ class UserController {
       res.status(500).json({ msg: "Something went wrong", err });
     }
   }
+
+  // static async signUpShop(req, res) {
+
+  //   let { firstname, lastname, username, password, phone } = req.body;
+    
+  //   // let phone = "+85620" + user_data.phone.substr(user_data.phone.length - 8, 8);
+  //   try {
+  //     //   const userNew = new User({...user_data, phone});
+  //     const userNew = new User({
+  //       firstname,
+  //       lastname,
+  //       username,
+  //       email,
+  //       password,
+  //       phone,
+  //     });
+  //     const user = await userNew.save();
+  //     res.status(201).json({ success: true, user });
+  //   } catch (err) {
+  //     console.log("err "+err)
+  //     res.status(500).json({ msg: "Something went wrong", err });
+  //   }
+  // }
 
   static async logIn(req, res) {
     try {
