@@ -38,6 +38,7 @@ class UserController {
   }
 
   static async signUp(req, res) {
+
     let { firstname, lastname, username, email, password, phone } = req.body;
     // let phone = "+85620" + user_data.phone.substr(user_data.phone.length - 8, 8);
     try {
@@ -53,6 +54,7 @@ class UserController {
       const user = await userNew.save();
       res.status(201).json({ success: true, user });
     } catch (err) {
+      console.log("err "+err)
       res.status(500).json({ msg: "Something went wrong", err });
     }
   }

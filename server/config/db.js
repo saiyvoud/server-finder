@@ -8,7 +8,8 @@ mongoose.Promise = global.Promise;
 mongoose.connect(
   URL,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  () => {
+  (err) => {
+    if(err) return console.log(err)
     console.log("Connected database...");
   }
 );
