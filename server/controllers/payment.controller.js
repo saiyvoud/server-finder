@@ -66,9 +66,12 @@ export default class Payment {
 
   static async confirmPayment(req, res) {
     try {
-      const { order_id, payBy } = await req.body;
+      const { order_id, payBy, totalCost } = await req.body;
 
-      if (!mongoose.isValidObjectId(order_id)) {
+      if (payBy) {
+        return res.status(400).json({ msg: "payBy field is required." });
+      }
+      if (!mongoose.isValidObjectId(order_id) || !order_id) {
         return res.status(404).json({ msg: "Invalid ID: " + order_id });
       }
 
@@ -79,6 +82,13 @@ export default class Payment {
 
       if (!checkOrder) {
         return res.status(404).json({ msg: "This order do not exist." });
+      }
+      if (totalCost !== checkOrder.totalCost) {
+        return res
+          .status(404)
+          .json({
+            msg: "Pay cost is not match. totalCost is:" + checkOrder.totalCost,
+          });
       }
 
       let payment_data = {
@@ -218,10 +228,10 @@ export default class Payment {
           shop: shop_id,
         },
         select: "shop",
-        populate:{
-            path:'shop',
-            select:'name phone'
-        }
+        populate: {
+          path: "shop",
+          select: "name phone",
+        },
       });
 
       await invoice_data.map((val) => {
@@ -229,14 +239,13 @@ export default class Payment {
         totalCost += val.totalCost;
       });
 
-      const shop_name = invoice_data[0].order.shop.name
+      const shop_name = invoice_data[0].order.shop.name;
 
-      title += `, Shop Name: ${shop_name}, TotalCost: ${totalCost} Kip`
+      title += `, Shop Name: ${shop_name}, TotalCost: ${totalCost} Kip`;
 
       req.body = { ...req.body, title, body, for: "admin" };
 
       await NotifController.postNotif(req, res);
-
     } catch (err) {
       console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
@@ -262,14 +271,13 @@ export default class Payment {
           shop: shop_id,
         },
         select: "shop",
-        populate:{
-            path:'shop',
-            select:'name phone'
-        }
+        populate: {
+          path: "shop",
+          select: "name phone",
+        },
       });
 
-      
-      if(!invoice_data || invoice_data.length <= 0){
+      if (!invoice_data || invoice_data.length <= 0) {
         return res.status(404).json({ msg: "This shop is not any invoice. " });
       }
 
@@ -277,13 +285,21 @@ export default class Payment {
         body += val._id + ", ";
         totalCost += val.totalCost;
 
-        await InvoiceModel.findOneAndUpdate({_id: val._id, status:'payment'}, {status:'transferred'}, {new: true})
-        await PaymentModel.findOneAndUpdate({order: val.order, status:'payment'}, {status:'transferred'}, {new: true})
+        await InvoiceModel.findOneAndUpdate(
+          { _id: val._id, status: "payment" },
+          { status: "transferred" },
+          { new: true }
+        );
+        await PaymentModel.findOneAndUpdate(
+          { order: val.order, status: "payment" },
+          { status: "transferred" },
+          { new: true }
+        );
       });
 
-      const shop_name = invoice_data[0].order.shop.name
+      const shop_name = invoice_data[0].order.shop.name;
 
-      title += `, Name: ${shop_name}, I have transferred money for TotalCost: ${totalCost} Kip to your bank account successfully.`
+      title += `, Name: ${shop_name}, I have transferred money for TotalCost: ${totalCost} Kip to your bank account successfully.`;
 
       req.body = { ...req.body, shop: shop_id, title, body, for: "shop" };
 

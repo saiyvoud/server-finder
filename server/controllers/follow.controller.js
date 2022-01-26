@@ -6,7 +6,7 @@ export default class Follow {
   static async getFollowShop(req, res) {
     try {
       const shop_id = req.params._id
-      if (!mongoose.isValidObjectId(shop_id)) {
+      if (!mongoose.isValidObjectId(shop_id) || !shop_id) {
         return res.status(404).json({ msg: "Invalid ID" });
       }
 
@@ -37,7 +37,7 @@ export default class Follow {
 
       const data = { user: req.user._id, shop: req.params._id };
 
-      if (!mongoose.isValidObjectId(req.params._id))
+      if (!mongoose.isValidObjectId(req.params._id) || !req.params._id)
         return res.status(400).json({ msg: `Invalid id: ${req.params._id}` });
 
       await FollowModel.create(data);
