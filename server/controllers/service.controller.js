@@ -65,6 +65,11 @@ export default class Service {
       if (!price) {
         return res.status(400).json({ msg: "price field is required." });
       }
+
+      if (price<=0) {
+        return res.status(400).json({ msg: "price must be more then 0." });
+      }
+
       if (!description) {
         return res.status(400).json({ msg: "description field is required." });
       }

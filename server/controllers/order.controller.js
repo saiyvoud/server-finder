@@ -83,6 +83,13 @@ export default class Model {
 
       let { shop_id, address_id, car_id, totalCost, orderService } = req.body;
 
+      if (!totalCost) {
+        return res.status(400).json({ msg: "totalCost field is required." });
+      }
+      if (!orderService || orderService.length <= 0) {
+        return res.status(400).json({ msg: "orderService do not has data." });
+      }
+
       if (
         !mongoose.isValidObjectId(car_id) ||
         !mongoose.isValidObjectId(shop_id) ||
@@ -120,11 +127,12 @@ export default class Model {
         description: desc,
       };
 
-      await OrderModel.create(order_data);
-      await OrderDetailModel.create(orderService);
+      const order = await OrderModel.create(order_data);
+      const orderDetail = await OrderDetailModel.create(orderService);
 
-      res.status(200).json({ msg: "Add order success." });
+      res.status(200).json({ msg: "Add order success.", order, orderDetail });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
@@ -133,22 +141,31 @@ export default class Model {
     try {
       const { order_id, description } = req.body;
 
-      if (!mongoose.isValidObjectId(order_id)) {
+      if (!description) {
+        return res.status(400).json({ msg: "description field is required." });
+      }
+
+      if (!mongoose.isValidObjectId(order_id) || !order_id) {
         return res.status(404).json({ msg: "Invalid ID" });
       }
 
-      await OrderModel.findOneAndUpdate(
+      const order = await OrderModel.findOneAndUpdate(
         { _id: order_id, status: "order" },
         { description, status: "cancel" },
         { new: true }
       );
+
       await OrderDetailModel.findOneAndUpdate(
         { _id: order_id, status: "order" },
         { status: "cancel" },
         { new: true }
       );
+      if(!order){
+        return res.status(404).json({ msg: "this order not found." });
+      }
       res.status(200).json({ msg: "Cancel Order Complete.", order });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
