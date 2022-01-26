@@ -4,7 +4,7 @@ import UploadImage from "../utils/uploadImage.js";
 export default class Review {
   static async getAllBanner(req, res) {
     try {
-      const banner = await BannerModel.find({})
+      const banner = await BannerModel.find({});
       res.status(200).json({ msg: "Get banner", banner });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
@@ -13,15 +13,20 @@ export default class Review {
 
   static async createBanner(req, res) {
     try {
-      let data = req.body;
-
-      if(!data){
-        return res.status(400).json({msg:"Please input data"})
+      const { name, detail, imgFile } = req.body;
+      if (!name) {
+        return res.status(400).json({ msg: "name field is required." });
+      }
+      if (!detail) {
+        return res.status(400).json({ msg: "detail field is required." });
+      }
+      if (!imgFile) {
+        return res.status(400).json({ msg: "imgFile field is required." });
       }
 
-      const imgURL = await UploadImage(data.imgFile)
-      
-      data = {...data, image: imgURL}
+      const imgURL = await UploadImage(imgFile);
+
+      const data = { name, detail, image: imgURL };
 
       const banner = await BannerModel.create(data);
 
@@ -34,17 +39,30 @@ export default class Review {
 
   static async updateBanner(req, res) {
     try {
-      const { banner_id, name, detail } = req.body;
+      const { banner_id, name, detail, imgFile } = req.body;
+      if (!name) {
+        return res.status(400).json({ msg: "name field is required." });
+      }
+      if (!detail) {
+        return res.status(400).json({ msg: "detail field is required." });
+      }
+      if (!mongoose.isValidObjectId(banner_id) || banner_id === "")
+        return res.status(400).json({ msg: "Invalid ID" + banner_id });
 
-      if (!mongoose.isValidObjectId(banner_id) || banner_id==='')
-        res.status(400).json({ msg: "Something wrong" });
+      if (imgFile) {
+        var imgURL = await UploadImage(imgFile);
+      }
+
+      const data = { name, detail, image: imgURL };
+
       const banner = await BannerModel.findByIdAndUpdate(
         banner_id,
-        { name, detail },
+        { $set: data },
         { new: true }
       );
       res.status(201).json({ msg: "Update banner", banner });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
@@ -53,10 +71,14 @@ export default class Review {
     try {
       const banner_id = req.params._id;
 
-      if (!mongoose.isValidObjectId(banner_id) || banner_id==='')
+      if (!mongoose.isValidObjectId(banner_id) || banner_id === "")
         res.status(400).json({ msg: "Something wrong" });
 
-      await BannerModel.findByIdAndUpdate(banner_id, {isDelete:true}, {new:true});
+      await BannerModel.findByIdAndUpdate(
+        banner_id,
+        { isDelete: true },
+        { new: true }
+      );
       res.status(201).json({ msg: "Delete complete" });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });

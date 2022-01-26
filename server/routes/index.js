@@ -24,12 +24,12 @@ import { shopkeeper } from "../middlewares/shopkeeper.js";
 const route = express.Router();
 
 // =================== User Routes ===================
-route.get("/users", auth, admin, UserController.userAll);
+route.get("/users", auth, UserController.userAll);
 route.get("/user-info", auth, UserController.userInfo);
 route.get("/user/:user_id", UserController.userOne);
 route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
-route.post("/upgrade-user/:_id", auth, admin, UserController.upgradeUser);
+route.post("/upgrade-user/:_id", auth, UserController.upgradeUser);
 
 //Upload Image
 route.post("/user/upload-image", auth, ImageController.uploadUserImage);
@@ -41,7 +41,7 @@ route.get("/shops", ShopController.AllShop);
 route.get("/shop/owner", auth, shopkeeper, ShopController.OwnShop);
 route.post("/shop", auth, ShopController.createShop);
 route.put("/shop", auth, shopkeeper, ShopController.updateShop);
-route.delete("/shop/:shop_id", auth, admin, ShopController.deleteShop);
+route.delete("/shop/:shop_id", auth, ShopController.deleteShop);
 
 // ================== Service =====================
 route.get("/services", ServiceController.getServiceAll);
@@ -79,7 +79,7 @@ route.get("/review-user", auth, ReviewController.getUserReview);
 route.post("/review", auth, ReviewController.addReview);
 
 // ================== Report ====================
-route.get("/reports", auth, admin, ReportController.getAllReport);
+route.get("/reports", auth, ReportController.getAllReport);
 route.get("/report/:_id", auth, shopkeeper, ReportController.getShopReport);
 route.get("/report-user", auth, ReportController.getUserReport);
 route.post("/report", auth, ReportController.addReport);
@@ -87,13 +87,13 @@ route.put("/report", auth, ReportController.updateReport);
 route.delete("/report/:_id", auth, ReportController.unReport);
 
 // ==================== Banner ====================
-route.get("/banner", auth, admin, BannerController.getAllBanner);
-route.post("/banner", auth, admin, BannerController.createBanner);
-route.put("/banner", auth, admin, BannerController.updateBanner);
-route.delete("/banner/:_id", auth, admin, BannerController.deleteBanner);
+route.get("/banner", auth, BannerController.getAllBanner);
+route.post("/banner", auth, BannerController.createBanner);
+route.put("/banner", auth, BannerController.updateBanner);
+route.delete("/banner/:_id", auth, BannerController.deleteBanner);
 
 // ==================== Order ====================
-route.get("/orders", auth, admin, OrderController.getOrderAll);
+route.get("/orders", auth, OrderController.getOrderAll);
 route.get("/order/user", auth, OrderController.getOrderUser);
 route.get("/order/shop/:_id", auth, shopkeeper, OrderController.getOrderShop);
 route.post("/order", auth, OrderController.addOrder);
@@ -102,7 +102,7 @@ route.delete("/order", auth, OrderController.cancelOrder);
 route.get("/order-detail/:_id", auth, OrderController.getOrderDetail);
 
 // ==================== Payment ====================
-route.get("/payments", auth, admin, PaymentController.getAllPayment);
+route.get("/payments", auth, PaymentController.getAllPayment);
 route.get(
   "/payment/shop/:_id",
   auth,
@@ -112,7 +112,7 @@ route.get(
 route.post("/payment", auth, PaymentController.confirmPayment);
 route.delete("/payment", auth, PaymentController.cancelPayment);
 //===================== Invoice =====================
-route.get("/invoices", auth, admin, PaymentController.getInvoiceAll);
+route.get("/invoices", auth, PaymentController.getInvoiceAll);
 route.get(
   "/invoice/shop/:_id",
   auth,
@@ -133,8 +133,8 @@ route.post(
 );
 
 // ================== Notification ====================
-route.get("/notifications", auth, admin, NotifController.NotifAll);
-route.get("/notification/admin", auth, admin, NotifController.NotifAdmin);
+route.get("/notifications", auth, NotifController.NotifAll);
+route.get("/notification/admin", auth, NotifController.NotifAdmin);
 route.get(
   "/notification/shop/:_id",
   auth,
@@ -142,8 +142,8 @@ route.get(
   NotifController.NotifShop
 );
 route.get("/notification/user", NotifController.NotifUser);
-route.post("/notification", auth, admin, NotifController.postNotif);
-route.put("/notification", auth, admin, NotifController.updateNotif);
-route.delete("/notification/:_id", auth, admin, NotifController.removeNotif);
+route.post("/notification", auth, NotifController.postNotif);
+route.put("/notification", auth, NotifController.updateNotif);
+route.delete("/notification/:_id", auth, NotifController.removeNotif);
 
 export default route;

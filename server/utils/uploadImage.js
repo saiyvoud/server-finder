@@ -9,7 +9,7 @@ const UploadImage = async (img) => {
     });
     return res_upload.url;
   } catch (err) {
-      return ""
+      return ''
   }
 };
 

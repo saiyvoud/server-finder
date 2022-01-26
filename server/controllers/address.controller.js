@@ -5,7 +5,7 @@ import AddressModel from "../models/address.model.js";
 export default class Address {
   static async getAddressAll(req, res) {
     try {
-      const address = await AddressModel.find({})
+      const address = await AddressModel.find({});
       res.status(200).json({ address });
     } catch (err) {
       return res.status(400).json({ msg: "Something wrong. ", err });
@@ -27,19 +27,35 @@ export default class Address {
 
   static async createAddress(req, res) {
     try {
-      let data = req.body;
+      // let data = req.body;
+      const { village, district, province, lat, lng } = req.body;
 
-      if(!data){
-        return res.status(400).json({msg:"Please input data"})
+      if (!village) {
+        return res.status(400).json({ msg: "village field is required." });
+      }
+      if (!district) {
+        return res.status(400).json({ msg: "district field is required." });
+      }
+      if (!province) {
+        return res.status(400).json({ msg: "province field is required." });
+      }
+      if (!lat) {
+        return res.status(400).json({ msg: "lat field is required." });
+      }
+      if (!lng) {
+        return res.status(400).json({ msg: "lng field is required." });
       }
 
-      console.log(data)
-      
-      data = { ...data, user: req.user._id };
-      await AddressModel.update({user: req.user._id, isActive: true}, {isActive: false}, {new: true})
+      const data = { user: req.user._id, village, district, province, lat, lng };
+      await AddressModel.updateMany(
+        { user: req.user._id, isActive: true },
+        { isActive: false },
+        { new: true }
+      );
       const address = await AddressModel.create(data);
       res.status(200).json({ msg: "Insert new address", address });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something Wrong.", err });
     }
   }
