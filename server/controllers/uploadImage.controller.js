@@ -11,16 +11,16 @@ export default class uploadImage {
     try {
       const imgFile = req.body.imgFile;
       const user_id = req.user._id;
+      if (!imgFile) {
+        return res.status(400).json({ msg: "imgFile field is required." });
+      }
       const imgUrl = await UploadImage(imgFile);
-      await User.findByIdAndUpdate(
-        user_id,
-        { image: imgUrl },
-        { new: true }
-      );
 
-      res.status(200).json({ msg: "upload user image complete", imgUrl  });
+      await User.findByIdAndUpdate(user_id, { image: imgUrl }, { new: true });
+
+      res.status(200).json({ msg: "upload user image complete", imgUrl });
     } catch (err) {
-      console.log(err)
+      console.log(err);
       res.status(500).json({ err: "Something went wrong" });
     }
   }
@@ -28,7 +28,9 @@ export default class uploadImage {
   static async uploadShopImage(req, res) {
     try {
       const { shop_id, imgFile } = req.body;
-
+      if (!imgFile) {
+        return res.status(400).json({ msg: "imgFile field is required." });
+      }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
@@ -38,13 +40,9 @@ export default class uploadImage {
       //   resource_type: "auto",
       // });
 
-      await Shop.findByIdAndUpdate(
-        shop_id,
-        { image: imgUrl },
-        { new: true }
-      );
+      await Shop.findByIdAndUpdate(shop_id, { image: imgUrl }, { new: true });
 
-      res.status(200).json({ msg: "upload shop image complete", imgUrl  });
+      res.status(200).json({ msg: "upload shop image complete", imgUrl });
     } catch (err) {
       console.log(err);
       res.status(500).json({ err: "Something went wrong" });
@@ -54,7 +52,9 @@ export default class uploadImage {
   static async uploadShopCoverImage(req, res) {
     try {
       const { shop_id, imgFile } = req.body;
-
+      if (!imgFile) {
+        return res.status(400).json({ msg: "imgFile field is required." });
+      }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
@@ -66,11 +66,11 @@ export default class uploadImage {
 
       await Shop.findByIdAndUpdate(
         shop_id,
-        { $push:{coverImage: imgUrl} },
+        { $push: { coverImage: imgUrl } },
         { new: true }
       );
 
-      res.status(200).json({ msg: "upload shop cover image complete", imgUrl  });
+      res.status(200).json({ msg: "upload shop cover image complete", imgUrl });
     } catch (err) {
       console.log(err);
       res.status(500).json({ err: "Something went wrong" });
@@ -80,6 +80,11 @@ export default class uploadImage {
   static async uploadServiceImage(req, res) {
     try {
       const { service_id, imgFile } = req.body;
+      if (!imgFile) {
+        return res.status(400).json({ msg: "imgFile field is required." });
+      }
+      if (!mongoose.isValidObjectId(service_id))
+        return res.status(400).json({ msg: `Invalid id: ${service_id}` });
 
       const imgUrl = await UploadImage(imgFile);
 
