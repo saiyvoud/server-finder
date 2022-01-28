@@ -17,16 +17,16 @@ export default class Car {
       const user_id = req.user._id;
       const { name, type, brand, carNo } = req.body;
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name." });
       }
       if (!type) {
-        return res.status(400).json({ msg: "type field is required." });
+        return res.status(400).json({ msg: "please input type." });
       }
       if (!brand) {
-        return res.status(400).json({ msg: "brand field is required." });
+        return res.status(400).json({ msg: "please input brand." });
       }
       if (!carNo) {
-        return res.status(400).json({ msg: "carNo field is required." });
+        return res.status(400).json({ msg: "please input carNo." });
       }
       const data = { user: user_id, name, type, brand, carNo };
       const car = await CarModel.create(data);
@@ -37,19 +37,22 @@ export default class Car {
   }
   static async updateCar(req, res) {
     try {
-      const _id = data.car_id;
+      const _id = req.body.car_id;
       const { name, type, brand, carNo } = req.body;
+      if (!_id) {
+        return res.status(400).json({ msg: "please input car_id." });
+      }
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name." });
       }
       if (!type) {
-        return res.status(400).json({ msg: "type field is required." });
+        return res.status(400).json({ msg: "please input type." });
       }
       if (!brand) {
-        return res.status(400).json({ msg: "brand field is required." });
+        return res.status(400).json({ msg: "please input brand." });
       }
       if (!carNo) {
-        return res.status(400).json({ msg: "carNo field is required." });
+        return res.status(400).json({ msg: "please input carNo." });
       }
 
       if (!mongoose.isValidObjectId(_id))
@@ -68,7 +71,9 @@ export default class Car {
   static async deleteCar(req, res) {
     try {
       const _id = req.params._id;
-
+      if (!car_id) {
+        return res.status(400).json({ msg: "please input car_id." });
+      }
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 

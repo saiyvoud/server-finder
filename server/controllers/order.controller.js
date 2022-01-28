@@ -32,6 +32,10 @@ export default class Model {
   static async getOrderShop(req, res) {
     try {
       const shop_id = req.params._id;
+
+      if (!shop_id)
+        return res.status(404).json({ msg: "shop_id can not be null." });
+
       const order = await OrderModel.find({ shop: shop_id }).populate([
         {
           path: "user",
@@ -83,8 +87,17 @@ export default class Model {
 
       let { shop_id, address_id, car_id, totalCost, orderService } = req.body;
 
+      if (!shop_id) {
+        return res.status(400).json({ msg: "please input shop_id." });
+      }
+      if (!address_id) {
+        return res.status(400).json({ msg: "please input address_id." });
+      }
+      if (!car_id) {
+        return res.status(400).json({ msg: "please input car_id." });
+      }
       if (!totalCost) {
-        return res.status(400).json({ msg: "totalCost field is required." });
+        return res.status(400).json({ msg: "please input totalCost." });
       }
       if (!orderService || orderService.length <= 0) {
         return res.status(400).json({ msg: "orderService do not has data." });
@@ -141,8 +154,11 @@ export default class Model {
     try {
       const { order_id, description } = req.body;
 
+      if (!order_id) {
+        return res.status(400).json({ msg: "please input order_id." });
+      }
       if (!description) {
-        return res.status(400).json({ msg: "description field is required." });
+        return res.status(400).json({ msg: "please input description." });
       }
 
       if (!mongoose.isValidObjectId(order_id) || !order_id) {
@@ -160,7 +176,7 @@ export default class Model {
         { status: "cancel" },
         { new: true }
       );
-      if(!order){
+      if (!order) {
         return res.status(404).json({ msg: "this order not found." });
       }
       res.status(200).json({ msg: "Cancel Order Complete.", order });
@@ -174,7 +190,9 @@ export default class Model {
   static async getOrderDetail(req, res) {
     try {
       const order_id = req.params._id;
-
+      if (!order_id) {
+        return res.status(400).json({ msg: "order_id can not be null." });
+      }
       if (!mongoose.isValidObjectId(order_id)) {
         return res.status(404).json({ msg: "Invalid ID" });
       }

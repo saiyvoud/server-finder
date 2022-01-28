@@ -12,7 +12,7 @@ export default class uploadImage {
       const imgFile = req.body.imgFile;
       const user_id = req.user._id;
       if (!imgFile) {
-        return res.status(400).json({ msg: "imgFile field is required." });
+        return res.status(400).json({ msg: "please input imgFile." });
       }
       const imgUrl = await UploadImage(imgFile);
 
@@ -29,7 +29,7 @@ export default class uploadImage {
     try {
       const { shop_id, imgFile } = req.body;
       if (!imgFile) {
-        return res.status(400).json({ msg: "imgFile field is required." });
+        return res.status(400).json({ msg: "please input imgFile." });
       }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
@@ -53,7 +53,7 @@ export default class uploadImage {
     try {
       const { shop_id, imgFile } = req.body;
       if (!imgFile) {
-        return res.status(400).json({ msg: "imgFile field is required." });
+        return res.status(400).json({ msg: "please input imgFile." });
       }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
@@ -81,7 +81,7 @@ export default class uploadImage {
     try {
       const { service_id, imgFile } = req.body;
       if (!imgFile) {
-        return res.status(400).json({ msg: "imgFile field is required." });
+        return res.status(400).json({ msg: "please input imgFile." });
       }
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });

@@ -36,10 +36,10 @@ export default class Review {
       let { shop_id, star, title } = req.body;
 
       if (!title) {
-        return res.status(400).json({ msg: "title field is required." });
+        return res.status(400).json({ msg: "please input title." });
       }
       if (!star || star < 0) {
-        return res.status(400).json({ msg: "star field is required or less then 0." });
+        return res.status(400).json({ msg: "please input star or less then 0." });
       }
 
       if (!mongoose.isValidObjectId(shop_id) || !shop_id) {

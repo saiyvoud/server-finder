@@ -31,19 +31,19 @@ export default class Address {
       const { village, district, province, lat, lng } = req.body;
 
       if (!village) {
-        return res.status(400).json({ msg: "village field is required." });
+        return res.status(400).json({ msg: "please input village." });
       }
       if (!district) {
-        return res.status(400).json({ msg: "district field is required." });
+        return res.status(400).json({ msg: "please input district." });
       }
       if (!province) {
-        return res.status(400).json({ msg: "province field is required." });
+        return res.status(400).json({ msg: "please input province." });
       }
       if (!lat) {
-        return res.status(400).json({ msg: "lat field is required." });
+        return res.status(400).json({ msg: "please input lat." });
       }
       if (!lng) {
-        return res.status(400).json({ msg: "lng field is required." });
+        return res.status(400).json({ msg: "please input lng." });
       }
 
       const data = { user: req.user._id, village, district, province, lat, lng };

@@ -15,13 +15,13 @@ export default class Review {
     try {
       const { name, detail, imgFile } = req.body;
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name." });
       }
       if (!detail) {
-        return res.status(400).json({ msg: "detail field is required." });
+        return res.status(400).json({ msg: "please input detail." });
       }
       if (!imgFile) {
-        return res.status(400).json({ msg: "imgFile field is required." });
+        return res.status(400).json({ msg: "please input imgFile." });
       }
 
       const imgURL = await UploadImage(imgFile);
@@ -41,10 +41,10 @@ export default class Review {
     try {
       const { banner_id, name, detail, imgFile } = req.body;
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name." });
       }
       if (!detail) {
-        return res.status(400).json({ msg: "detail field is required." });
+        return res.status(400).json({ msg: "please input detail." });
       }
       if (!mongoose.isValidObjectId(banner_id) || banner_id === "")
         return res.status(400).json({ msg: "Invalid ID" + banner_id });
@@ -70,7 +70,9 @@ export default class Review {
   static async deleteBanner(req, res) {
     try {
       const banner_id = req.params._id;
-
+      if (!banner_id) {
+        return res.status(400).json({ msg: "banner_id can not be null." });
+      }
       if (!mongoose.isValidObjectId(banner_id) || banner_id === "")
         res.status(400).json({ msg: "Something wrong" });
 

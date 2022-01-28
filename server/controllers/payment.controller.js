@@ -35,7 +35,9 @@ export default class Payment {
   static async getShopPayment(req, res) {
     try {
       let shop_id = req.params._id;
-
+if(!shop_id){
+  return res.status(404).json({ msg: "shop_id can not be null." });
+}
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(404).json({ msg: "Invalid ID" });
 
@@ -67,9 +69,14 @@ export default class Payment {
   static async confirmPayment(req, res) {
     try {
       const { order_id, payBy, totalCost } = await req.body;
-
+      if(!order_id){
+        return res.status(404).json({ msg: "please input order_id." });
+      }
+      if(!totalCost){
+        return res.status(404).json({ msg: "please input totalCost." });
+      }
       if (payBy) {
-        return res.status(400).json({ msg: "payBy field is required." });
+        return res.status(400).json({ msg: "please input payBy." });
       }
       if (!mongoose.isValidObjectId(order_id) || !order_id) {
         return res.status(404).json({ msg: "Invalid ID: " + order_id });

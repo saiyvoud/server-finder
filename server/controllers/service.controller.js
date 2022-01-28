@@ -57,13 +57,13 @@ export default class Service {
       let { shop_id, name, category, price, description, imgFile } = req.body;
 
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name." });
       }
       if (!category) {
-        return res.status(400).json({ msg: "category field is required." });
+        return res.status(400).json({ msg: "please input category." });
       }
       if (!price) {
-        return res.status(400).json({ msg: "price field is required." });
+        return res.status(400).json({ msg: "please input price." });
       }
 
       if (price<=0) {
@@ -71,7 +71,7 @@ export default class Service {
       }
 
       if (!description) {
-        return res.status(400).json({ msg: "description field is required." });
+        return res.status(400).json({ msg: "please input description." });
       }
 
       if (!mongoose.isValidObjectId(shop_id))
@@ -102,16 +102,16 @@ export default class Service {
       let { service_id, name, category, price, description, imgFile } = req.body;
 
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name." });
       }
       if (!category) {
-        return res.status(400).json({ msg: "category field is required." });
+        return res.status(400).json({ msg: "please input category." });
       }
       if (!price) {
-        return res.status(400).json({ msg: "price field is required." });
+        return res.status(400).json({ msg: "please input price." });
       }
       if (!description) {
-        return res.status(400).json({ msg: "description field is required." });
+        return res.status(400).json({ msg: "please input description." });
       }
 
       if (!mongoose.isValidObjectId(service_id))

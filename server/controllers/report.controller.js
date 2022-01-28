@@ -64,10 +64,10 @@ export default class Report {
       let { shop_id, order_id, title, body } = req.body;
 
       if (!title) {
-        return res.status(400).json({ msg: "title field is required." });
+        return res.status(400).json({ msg: "please input title." });
       }
       if (!body) {
-        return res.status(400).json({ msg: "body field is required." });
+        return res.status(400).json({ msg: "please input body." });
       }
 
       if (!mongoose.isValidObjectId(order_id) || !order_id) {
@@ -100,10 +100,10 @@ export default class Report {
       const user_id = req.user._id;
 
       if (!title) {
-        return res.status(400).json({ msg: "title field is required." });
+        return res.status(400).json({ msg: "please input title." });
       }
       if (!body) {
-        return res.status(400).json({ msg: "body field is required." });
+        return res.status(400).json({ msg: "please input body." });
       }
 
       if (!mongoose.isValidObjectId(report_id) || report_id === "")

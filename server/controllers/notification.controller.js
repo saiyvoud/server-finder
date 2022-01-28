@@ -50,7 +50,20 @@ export default class Notification {
 
   static async postNotif(req, res) {
     try {
-      let data = req.body;
+      let data = body;
+
+      if (!data.image) {
+        return res.status(404).json({ msg: "please input image." });
+      }
+      if (!data.title) {
+        return res.status(404).json({ msg: "please input title." });
+      }
+      if (!data.body) {
+        return res.status(404).json({ msg: "please input body." });
+      }
+      if (!data.for) {
+        return res.status(404).json({ msg: "please input for." });
+      }
 
       const imgUrl = await UploadImage(data.image);
 
@@ -67,6 +80,15 @@ export default class Notification {
   static async updateNotif(req, res) {
     try {
       const { notif_id, title, body } = req.body;
+      if (!notif_id) {
+        return res.status(404).json({ msg: "please input notif_id." });
+      }
+      if (!title) {
+        return res.status(404).json({ msg: "please input title." });
+      }
+      if (!body) {
+        return res.status(404).json({ msg: "please input body." });
+      }
 
       if (!mongoose.isValidObjectId(notif_id))
         res.status(400).json({ msg: "Something wrong" });
@@ -85,7 +107,9 @@ export default class Notification {
   static async removeNotif(req, res) {
     try {
       const notif_id = req.params._id;
-
+      if (!notif_id) {
+        return res.status(404).json({ msg: "please input notif_id." });
+      }
       if (!mongoose.isValidObjectId(notif_id))
         res.status(400).json({ msg: "Invalid ID: " + notif_id });
 

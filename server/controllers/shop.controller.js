@@ -43,55 +43,53 @@ export default class Shop {
         req.body;
 
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name" });
       }
       if (!phone) {
-        return res.status(400).json({ msg: "phone field is required." });
+        return res.status(400).json({ msg: "please input phone" });
       }
       if (!bank) {
-        return res.status(400).json({ msg: "bank field is required." });
+        return res.status(400).json({ msg: "please input bank" });
       }
       if (!address) {
-        return res.status(400).json({ msg: "address field is required." });
+        return res.status(400).json({ msg: "please input address" });
       }
       if (!openTime) {
-        return res.status(400).json({ msg: "openTime field is required." });
+        return res.status(400).json({ msg: "please input openTime" });
       }
       if (!closeTime) {
-        return res.status(400).json({ msg: "closeTime field is required." });
+        return res.status(400).json({ msg: "please input closeTime" });
       }
 
       if (!bank.bankName) {
-        return res
-          .status(400)
-          .json({ msg: "bank( bankName field is required.)" });
+        return res.status(400).json({ msg: "bank( please input bankName)" });
       }
       if (!bank.accountId) {
-        return res
-          .status(400)
-          .json({ msg: "bank( accountId field is required.)" });
+        return res.status(400).json({ msg: "bank( please input accountId)" });
       }
       if (!bank.accountName) {
-        return res
-          .status(400)
-          .json({ msg: "bank( accountName field is required.)" });
+        return res.status(400).json({ msg: "bank( please input accountName)" });
       }
 
       if (!address.village) {
-        return res.status(400).json({ msg: "village field is required." });
+        return res.status(400).json({ msg: "please input village" });
       }
       if (!address.district) {
-        return res.status(400).json({ msg: "district field is required." });
+        return res.status(400).json({ msg: "please input district" });
       }
       if (!address.province) {
-        return res.status(400).json({ msg: "province field is required." });
+        return res.status(400).json({ msg: "please input province" });
       }
       if (!address.lat) {
-        return res.status(400).json({ msg: "lat field is required." });
+        return res.status(400).json({ msg: "please input lat" });
       }
       if (!address.lng) {
-        return res.status(400).json({ msg: "lng field is required." });
+        return res.status(400).json({ msg: "please input lng" });
       }
+
+      const chkExist = await ShopModel.findOne({ user: user_id });
+
+      if (chkExist) return res.status(400).json({ msg: "your are already have shop." });
 
       const imgUrl = await UploadImage(imgFile);
 
@@ -131,66 +129,71 @@ export default class Shop {
 
   static async updateShop(req, res) {
     try {
-      let {shop_id, name, imgFile, phone, bank, address, openTime, closeTime } =
-        req.body;
+      let {
+        shop_id,
+        name,
+        imgFile,
+        phone,
+        bank,
+        address,
+        openTime,
+        closeTime,
+      } = req.body;
 
       if (!name) {
-        return res.status(400).json({ msg: "name field is required." });
+        return res.status(400).json({ msg: "please input name" });
       }
       if (!phone) {
-        return res.status(400).json({ msg: "phone field is required." });
+        return res.status(400).json({ msg: "please input phone" });
       }
       if (!bank) {
-        return res.status(400).json({ msg: "bank field is required." });
+        return res.status(400).json({ msg: "please input bank" });
       }
       if (!address) {
-        return res.status(400).json({ msg: "address field is required." });
+        return res.status(400).json({ msg: "please input address" });
       }
       if (!openTime) {
-        return res.status(400).json({ msg: "openTime field is required." });
+        return res.status(400).json({ msg: "please input openTime" });
       }
       if (!closeTime) {
-        return res.status(400).json({ msg: "closeTime field is required." });
+        return res.status(400).json({ msg: "please input closeTime" });
       }
 
       if (!bank.bankName) {
-        return res
-          .status(400)
-          .json({ msg: "bank( bankName field is required.)" });
+        return res.status(400).json({ msg: "bank( please input bankName)" });
       }
       if (!bank.accountId) {
-        return res
-          .status(400)
-          .json({ msg: "bank( accountId field is required.)" });
+        return res.status(400).json({ msg: "bank( please input accountId)" });
       }
       if (!bank.accountName) {
-        return res
-          .status(400)
-          .json({ msg: "bank( accountName field is required.)" });
+        return res.status(400).json({ msg: "bank( please input accountName)" });
       }
 
       if (!address.village) {
-        return res.status(400).json({ msg: "village field is required." });
+        return res.status(400).json({ msg: "please input village" });
       }
       if (!address.district) {
-        return res.status(400).json({ msg: "district field is required." });
+        return res.status(400).json({ msg: "please input district" });
       }
       if (!address.province) {
-        return res.status(400).json({ msg: "province field is required." });
+        return res.status(400).json({ msg: "please input province" });
       }
       if (!address.lat) {
-        return res.status(400).json({ msg: "lat field is required." });
+        return res.status(400).json({ msg: "please input lat" });
       }
       if (!address.lng) {
-        return res.status(400).json({ msg: "lng field is required." });
+        return res.status(400).json({ msg: "please input lng" });
       }
 
-      if(imgFile){
+      if (imgFile) {
         var imgUrl = await UploadImage(imgFile);
-      }     
+      }
 
-      if (!mongoose.isValidObjectId(shop_id) || shop_id === '')
+      if (!mongoose.isValidObjectId(shop_id) || shop_id === "")
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+
+      // const banks = await BankModel.create(bank)
+
       const data = {
         user: user_id,
         name,
@@ -198,7 +201,7 @@ export default class Shop {
         openTime,
         closeTime,
         address,
-        bankAccount: banks._id,
+        // bankAccount: banks._id,
         image: imgUrl,
       };
 

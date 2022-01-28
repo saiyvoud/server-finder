@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const SECRET_KEY = process.env.SECRET_KEY;
-const SALT_I = parseInt(process.env.SALT) || 10;
+const SALT_I = parseInt(process.env.SALT);
 
 
 const userSchema = mongoose.Schema({
@@ -20,18 +20,19 @@ const userSchema = mongoose.Schema({
         maxlength: 255,
         required: true
     },
-    username: {
-        type: String, 
-        unique: 1,
-        maxlength: 255,
-        required: true
-    }, 
-    email: {
-        type: String,
-        default:''
-    }, 
+    // username: {
+    //     type: String, 
+    //     unique: 1,
+    //     maxlength: 255,
+    //     required: true
+    // }, 
+    // email: {
+    //     type: String,
+    //     default:''
+    // }, 
     password: {
         type: String,
+        required: true
     }, 
     phone: {
         type: String,
