@@ -2,7 +2,7 @@ import bcryptjs from "bcryptjs";
 import { User } from "../models/user.model.js";
 import UploadImage from "../utils/uploadImage.js";
 
-const SALT_I = process.env.SALT
+const SALT_I = process.env.SALT;
 
 class UserController {
   static async userAll(req, res) {
@@ -128,25 +128,28 @@ class UserController {
 
   static async editPassword(req, res) {
     try {
-      console.log(SALT_I);
-
       const user_id = req.user._id;
       const { oldPassword, newPassword } = req.body;
+
+      if(!oldPassword){
+        return res.status(400).json({ msg: "Please input oldPassword."});
+      }
+      if(!newPassword){
+        return res.status(400).json({ msg: "Please input newPassword."});
+      }
+
       const user = await User.findOne({ _id: user_id });
-      user.comparePassword(oldPassword, (err, isMatch) => {
+      user.comparePassword(oldPassword, async (err, isMatch) => {
         if (err) return res.status(400).json({ msg: "Invalid Password.", err });
         if (!isMatch) return res.status(400).json({ msg: "Invalid Password." });
+        const salt = await bcryptjs.genSalt(parseInt(SALT_I));
+        const pwd = await bcryptjs.hash(newPassword, salt);
+        const user = await User.findByIdAndUpdate(user_id, {password: pwd}, {new: true})
+        res.status(200).json({msg: 'Update Password success.', user})
       });
-      const pwd = await bcryptjs.genSalt(SALT_I);
-
-      console.log(pwd);
-        // bcryptjs.hash(newPassword, salt, (err, hash) => {
-        //   if (err) return res.status(400).json({ msg: "Something Wrong.", err });
-        //   user.password = hash;
-        //   user.save()
-        // }
+      
     } catch (err) {
-      console.log(err)
+      console.log(err);
       res.status(400).json({ msg: "Something Wrong.", err });
     }
   }
