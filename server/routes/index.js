@@ -32,7 +32,7 @@ route.post("/user/login", UserController.logIn);
 route.put("/user/update", auth, UserController.updateUser);
 route.post("/upgrade-user/:_id", auth, UserController.upgradeUser);
 route.put("/user/edit-password", auth, UserController.editPassword);
-route.put("/user/forgot-password", auth, UserController.forgotPassword);
+route.put("/user/forgot-password", UserController.forgotPassword);
 
 //Upload Image
 route.post("/user/upload-image", auth, ImageController.uploadUserImage);

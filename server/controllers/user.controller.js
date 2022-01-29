@@ -179,16 +179,17 @@ class UserController {
   }
   static async forgotPassword(req, res) {
     try {
-      const user_id = req.user._id;
-      const { newPassword } = req.body;
-
+      const { newPassword, phone } = req.body;
+      if (!phone) {
+        return res.status(400).json({ msg: "Please input phone." });
+      }
       if (!newPassword) {
         return res.status(400).json({ msg: "Please input newPassword." });
       }
       const salt = await bcryptjs.genSalt(parseInt(SALT_I));
       const pwd = await bcryptjs.hash(newPassword, salt);
-      const user = await User.findByIdAndUpdate(
-        { _id: user_id },
+      const user = await User.findOneAndUpdate(
+        { phone },
         { password: pwd },
         { new: true }
       );
