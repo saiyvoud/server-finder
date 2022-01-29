@@ -20,16 +20,6 @@ const userSchema = mongoose.Schema({
         maxlength: 255,
         required: true
     },
-    // username: {
-    //     type: String, 
-    //     unique: 1,
-    //     maxlength: 255,
-    //     required: true
-    // }, 
-    // email: {
-    //     type: String,
-    //     default:''
-    // }, 
     password: {
         type: String,
         required: true
@@ -95,8 +85,10 @@ userSchema.methods.comparePassword = function(loginPassword, cb){
 
 userSchema.methods.generateToken = function(cb){
     let user = this;
-    let token = jwt.sign(user._id.toHexString(), SECRET_KEY)
-    // let token = jwt.sign(user._id.toHexString(), SECRET_KEY)
+    
+    let token = jwt.sign({_id: user._id}, SECRET_KEY, {
+        expiresIn:'7d'
+    })
 
     user.token = token;
     user.save((err, user)=>{
@@ -109,6 +101,9 @@ userSchema.statics.findByToken = function(token, cb){
     let user = this;
 
     jwt.verify(token, SECRET_KEY, (err, decode)=>{
+
+        if(err) return cb(err, null)
+        
         user.findOne({'_id': decode, token}, (err, user)=>{            
             if (err) return cb(err);
             cb(null, user)

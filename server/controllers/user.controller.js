@@ -1,5 +1,6 @@
 import { auth } from "../middlewares/auth.js";
 import { User } from "../models/user.model.js";
+import UploadImage from "../utils/uploadImage.js";
 
 class UserController {
   static async userAll(req, res) {
@@ -14,6 +15,7 @@ class UserController {
   static async userInfo(req, res) {
     try {
       res.status(200).json({
+        _id: req.user._id,
         firstname: req.user.firstname,
         lastname: req.user.lastname,
         username: req.user.username,
@@ -41,7 +43,7 @@ class UserController {
   }
 
   static async signUp(req, res) {
-    let { firstname, lastname, password, phone } = req.body;
+    let { firstname, lastname, password, phone, imgFile } = req.body;
     if (!firstname) {
       return res.status(400).json({ msg: "please input firstname." });
     }
@@ -68,12 +70,17 @@ class UserController {
           .json({ msg: "this phone number is already exist." });
       }
 
+      if(imgFile){
+        var imgUrl = await UploadImage(imgFile)
+      }
+
       const userNew = new User({
         firstname,
         lastname,
         // username,
         password,
         phone,
+        image: imgUrl
       });
 
       const user = await userNew.save();
