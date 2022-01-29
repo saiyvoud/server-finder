@@ -29,8 +29,10 @@ route.get("/user-info", auth, UserController.userInfo);
 route.get("/user/:user_id", UserController.userOne);
 route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
+route.put("/user/update", auth, UserController.updateUser);
 route.post("/upgrade-user/:_id", auth, UserController.upgradeUser);
 route.put("/user/edit-password", auth, UserController.editPassword);
+route.put("/user/forgot-password", auth, UserController.forgotPassword);
 
 //Upload Image
 route.post("/user/upload-image", auth, ImageController.uploadUserImage);

@@ -93,6 +93,27 @@ class UserController {
     }
   }
 
+  static async updateUser(req, res) {
+    try {
+      let { firstname, lastname } = req.body;
+      if (!firstname) {
+        return res.status(400).json({ msg: "please input firstname." });
+      }
+      if (!lastname) {
+        return res.status(400).json({ msg: "please input lastname." });
+      }
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { firstname, lastname },
+        { new: true }
+      );
+
+      res.status(201).json({ msg: "update complete.", user });
+    } catch (err) {
+      res.status(500).json({ msg: "Something went wrong", err });
+    }
+  }
+
   static async logIn(req, res) {
     try {
       const { phone, password } = req.body;
@@ -131,11 +152,11 @@ class UserController {
       const user_id = req.user._id;
       const { oldPassword, newPassword } = req.body;
 
-      if(!oldPassword){
-        return res.status(400).json({ msg: "Please input oldPassword."});
+      if (!oldPassword) {
+        return res.status(400).json({ msg: "Please input oldPassword." });
       }
-      if(!newPassword){
-        return res.status(400).json({ msg: "Please input newPassword."});
+      if (!newPassword) {
+        return res.status(400).json({ msg: "Please input newPassword." });
       }
 
       const user = await User.findOne({ _id: user_id });
@@ -144,16 +165,39 @@ class UserController {
         if (!isMatch) return res.status(400).json({ msg: "Invalid Password." });
         const salt = await bcryptjs.genSalt(parseInt(SALT_I));
         const pwd = await bcryptjs.hash(newPassword, salt);
-        const user = await User.findByIdAndUpdate(user_id, {password: pwd}, {new: true})
-        res.status(200).json({msg: 'Update Password success.', user})
+        const user = await User.findByIdAndUpdate(
+          user_id,
+          { password: pwd },
+          { new: true }
+        );
+        res.status(200).json({ msg: "Update Password success.", user });
       });
-      
     } catch (err) {
       console.log(err);
       res.status(400).json({ msg: "Something Wrong.", err });
     }
   }
+  static async forgotPassword(req, res) {
+    try {
+      const user_id = req.user._id;
+      const { newPassword } = req.body;
 
+      if (!newPassword) {
+        return res.status(400).json({ msg: "Please input newPassword." });
+      }
+      const salt = await bcryptjs.genSalt(parseInt(SALT_I));
+      const pwd = await bcryptjs.hash(newPassword, salt);
+      const user = await User.findByIdAndUpdate(
+        { _id: user_id },
+        { password: pwd },
+        { new: true }
+      );
+      res.status(200).json({ msg: "Update password success.", user });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ msg: "Something Wrong.", err });
+    }
+  }
   static async upgradeUser(req, res) {
     try {
       const _id = req.params._id;
