@@ -30,6 +30,7 @@ route.get("/user/:user_id", UserController.userOne);
 route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
 route.post("/upgrade-user/:_id", auth, UserController.upgradeUser);
+route.put("/user/edit-password", auth, UserController.editPassword);
 
 //Upload Image
 route.post("/user/upload-image", auth, ImageController.uploadUserImage);

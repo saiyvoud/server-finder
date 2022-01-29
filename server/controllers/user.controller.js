@@ -1,6 +1,8 @@
-import { auth } from "../middlewares/auth.js";
+import bcryptjs from "bcryptjs";
 import { User } from "../models/user.model.js";
 import UploadImage from "../utils/uploadImage.js";
+
+const SALT_I = process.env.SALT
 
 class UserController {
   static async userAll(req, res) {
@@ -70,8 +72,8 @@ class UserController {
           .json({ msg: "this phone number is already exist." });
       }
 
-      if(imgFile){
-        var imgUrl = await UploadImage(imgFile)
+      if (imgFile) {
+        var imgUrl = await UploadImage(imgFile);
       }
 
       const userNew = new User({
@@ -80,7 +82,7 @@ class UserController {
         // username,
         password,
         phone,
-        image: imgUrl
+        image: imgUrl,
       });
 
       const user = await userNew.save();
@@ -90,29 +92,6 @@ class UserController {
       res.status(500).json({ msg: "Something went wrong", err });
     }
   }
-
-  // static async signUpShop(req, res) {
-
-  //   let { firstname, lastname, username, password, phone } = req.body;
-
-  //   // let phone = "+85620" + user_data.phone.substr(user_data.phone.length - 8, 8);
-  //   try {
-  //     //   const userNew = new User({...user_data, phone});
-  //     const userNew = new User({
-  //       firstname,
-  //       lastname,
-  //       username,
-  //       email,
-  //       password,
-  //       phone,
-  //     });
-  //     const user = await userNew.save();
-  //     res.status(201).json({ success: true, user });
-  //   } catch (err) {
-  //     console.log("err "+err)
-  //     res.status(500).json({ msg: "Something went wrong", err });
-  //   }
-  // }
 
   static async logIn(req, res) {
     try {
@@ -144,6 +123,31 @@ class UserController {
       });
     } catch (err) {
       res.status(400).json({ msg: "Something Wrong." });
+    }
+  }
+
+  static async editPassword(req, res) {
+    try {
+      console.log(SALT_I);
+
+      const user_id = req.user._id;
+      const { oldPassword, newPassword } = req.body;
+      const user = await User.findOne({ _id: user_id });
+      user.comparePassword(oldPassword, (err, isMatch) => {
+        if (err) return res.status(400).json({ msg: "Invalid Password.", err });
+        if (!isMatch) return res.status(400).json({ msg: "Invalid Password." });
+      });
+      const pwd = await bcryptjs.genSalt(SALT_I);
+
+      console.log(pwd);
+        // bcryptjs.hash(newPassword, salt, (err, hash) => {
+        //   if (err) return res.status(400).json({ msg: "Something Wrong.", err });
+        //   user.password = hash;
+        //   user.save()
+        // }
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ msg: "Something Wrong.", err });
     }
   }
 

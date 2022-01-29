@@ -39,7 +39,7 @@ export default class Shop {
   static async createShop(req, res) {
     try {
       let user_id = req.user._id;
-      let { name, imgFile, phone, bank, address, openTime, closeTime } =
+      let { name, imgFile, coverImg, phone, bank, address, openTime, closeTime } =
         req.body;
 
       if (!name) {
@@ -88,10 +88,17 @@ export default class Shop {
       }
 
       const chkExist = await ShopModel.findOne({ user: user_id });
+      if (chkExist) return res.status(400).json({ msg: "you are already have shop." });
+      
+      const chkBankExist = await BankModel.findOne({ accountId: bank.accountId });
+      if (chkBankExist) return res.status(400).json({ msg: "your back account is already exist." });
 
-      if (chkExist) return res.status(400).json({ msg: "your are already have shop." });
-
-      const imgUrl = await UploadImage(imgFile);
+      if(imgFile){
+        var imgUrl = await UploadImage(imgFile);
+      }
+      if(coverImg){
+        var coverImgUrl = await UploadImage(coverImg);
+      }
 
       const banks = await BankModel.create(bank);
 
@@ -110,6 +117,7 @@ export default class Shop {
         address,
         bankAccount: banks._id,
         image: imgUrl,
+        coverImage: coverImgUrl
       };
 
       const shop = await ShopModel.create(data);

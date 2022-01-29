@@ -7,13 +7,13 @@ const shopSchema = mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: 1
+      unique: 1,
     },
-    bankAccount:{
+    bankAccount: {
       type: Schema.Types.ObjectId,
       ref: "BankAccount",
       required: true,
-      unique: 1
+      unique: 1,
     },
     name: {
       type: String,
@@ -22,9 +22,12 @@ const shopSchema = mongoose.Schema(
     },
     image: {
       type: String,
-      default:''
+      default: "",
     },
-    coverImage: [String],
+    coverImage: {
+      type: String,
+      default: "",
+    },
     phone: {
       type: String,
       required: true,
@@ -34,28 +37,28 @@ const shopSchema = mongoose.Schema(
       village: {
         type: String,
         maxlength: 200,
-        required: true
+        required: true,
       },
       district: {
         type: String,
         maxlength: 200,
-        required: true
+        required: true,
       },
       province: {
         type: String,
         maxlength: 200,
-        required: true
+        required: true,
       },
       lat: Number,
-      lng: Number
+      lng: Number,
     },
-    openTime:{
+    openTime: {
       type: String,
-      maxlength: 15
+      maxlength: 15,
     },
     closeTime: {
       type: String,
-      maxlength: 15
+      maxlength: 15,
     },
     isDelete: {
       type: Boolean,

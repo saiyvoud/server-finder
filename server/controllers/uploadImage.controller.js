@@ -9,12 +9,17 @@ import UploadImage from "../utils/uploadImage.js";
 export default class uploadImage {
   static async uploadUserImage(req, res) {
     try {
-      const imgFile = req.body.imgFile;
+      const { imgFile, oldImgUrl } = req.body;
       const user_id = req.user._id;
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
       }
-      const imgUrl = await UploadImage(imgFile);
+      const imgUrl = await UploadImage(imgFile, oldImgUrl);
+
+      console.log(imgUrl);
+      if (!imgUrl) {
+        return res.status(400).json({ msg: "image file not support. " });
+      }
 
       await User.findByIdAndUpdate(user_id, { image: imgUrl }, { new: true });
 
@@ -27,19 +32,18 @@ export default class uploadImage {
 
   static async uploadShopImage(req, res) {
     try {
-      const { shop_id, imgFile } = req.body;
+      const { shop_id, imgFile, oldImgUrl } = req.body;
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
       }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
-      const imgUrl = await UploadImage(imgFile);
-      // const res_upload = await cloudinary.uploader.upload(fileStr, null, {
-      //   public_id: `${Date.now()}`,
-      //   resource_type: "auto",
-      // });
-
+      const imgUrl = await UploadImage(imgFile, oldImgUrl);
+      console.log(imgUrl);
+      if (!imgUrl) {
+        return res.status(400).json({ msg: "image file not support. " });
+      }
       await Shop.findByIdAndUpdate(shop_id, { image: imgUrl }, { new: true });
 
       res.status(200).json({ msg: "upload shop image complete", imgUrl });
@@ -51,22 +55,23 @@ export default class uploadImage {
 
   static async uploadShopCoverImage(req, res) {
     try {
-      const { shop_id, imgFile } = req.body;
+      const { shop_id, imgFile, oldImgUrl } = req.body;
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
       }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
-      const imgUrl = await UploadImage(imgFile);
-      // const res_upload = await cloudinary.uploader.upload(fileStr, null, {
-      //   public_id: `${Date.now()}`,
-      //   resource_type: "auto",
-      // });
+      const imgUrl = await UploadImage(imgFile, oldImgUrl);
+
+      console.log(imgUrl);
+      if (!imgUrl) {
+        return res.status(400).json({ msg: "image file not support. " });
+      }
 
       await Shop.findByIdAndUpdate(
         shop_id,
-        { $push: { coverImage: imgUrl } },
+        { coverImage: imgUrl },
         { new: true }
       );
 
@@ -79,14 +84,19 @@ export default class uploadImage {
 
   static async uploadServiceImage(req, res) {
     try {
-      const { service_id, imgFile } = req.body;
+      const { service_id, imgFile, oldImgUrl } = req.body;
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
       }
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });
 
-      const imgUrl = await UploadImage(imgFile);
+      const imgUrl = await UploadImage(imgFile, oldImgUrl);
+
+      console.log(imgUrl);
+      if (!imgUrl) {
+        return res.status(400).json({ msg: "image file not support. " });
+      }
 
       await Service.findByIdAndUpdate(
         service_id,
