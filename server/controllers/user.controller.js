@@ -147,6 +147,16 @@ class UserController {
     }
   }
 
+  static async logOut(req, res) {
+    try {
+      await User.findByIdAndUpdate(req.user._id, { token: "" }, { new: true });
+      res.status(200).json({ msg: "Log Out ..." });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ msg: "Something Wrong." });
+    }
+  }
+
   static async editPassword(req, res) {
     try {
       const user_id = req.user._id;
@@ -193,6 +203,11 @@ class UserController {
         { password: pwd },
         { new: true }
       );
+
+      if(!user) {
+        return res.status(400).json({ msg: "your phone number is not exist." });
+      }
+
       res.status(200).json({ msg: "Update password success.", user });
     } catch (err) {
       console.log(err);
@@ -213,6 +228,8 @@ class UserController {
       res.status(400).json({ msg: "Something Wrong." });
     }
   }
+
+  
 }
 
 export default UserController;
