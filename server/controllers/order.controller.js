@@ -150,6 +150,38 @@ export default class Model {
     }
   }
 
+  static async confirmOrder(req, res) {
+    try {
+      const order_id = req.params._id;
+
+      if (!order_id) {
+        return res.status(400).json({ msg: "order_id can not be null." });
+      }
+      if (!mongoose.isValidObjectId(order_id)) {
+        return res.status(404).json({ msg: "Invalid order ID" });
+      }
+
+      const order = await OrderModel.findOneAndUpdate(
+        { _id: order_id, status: "order" },
+        { description, status: "going" },
+        { new: true }
+      );
+
+      await OrderDetailModel.findOneAndUpdate(
+        { _id: order_id, status: "order" },
+        { status: "going" },
+        { new: true }
+      );
+      if (!order) {
+        return res.status(404).json({ msg: "this order is not found." });
+      }
+      res.status(200).json({ msg: "Confirm Order Complete.", order });
+    } catch (err) {
+      console.log(err);
+      res.status(404).json({ msg: "Something wrong", err });
+    }
+  }
+
   static async cancelOrder(req, res) {
     try {
       const { order_id, description } = req.body;

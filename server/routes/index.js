@@ -15,6 +15,7 @@ import BannerController from "../controllers/banner.controller.js";
 import OrderController from "../controllers/order.controller.js";
 import PaymentController from "../controllers/payment.controller.js";
 import NotifController from "../controllers/notification.controller.js";
+import TagController from "../controllers/tag.controller.js";
 
 // ================ import middleware ================
 import { auth } from "../middlewares/auth.js";
@@ -51,6 +52,17 @@ route.get("/shop/owner", auth, shopkeeper, ShopController.OwnShop);
 route.post("/shop", auth, ShopController.createShop);
 route.put("/shop", auth, shopkeeper, ShopController.updateShop);
 route.delete("/shop/:shop_id", auth, ShopController.deleteShop);
+
+// ================== Bank account ==========================
+route.post("/bank", auth, shopkeeper, ShopController.createBank);
+route.put("/bank", auth, shopkeeper, ShopController.updateBank);
+route.delete("/bank/:_id", auth, shopkeeper, ShopController.deleteBank);
+
+// ================== Tag ==========================
+route.get("/tags", auth, shopkeeper, TagController.getAllTag);
+route.post("/tag", auth, shopkeeper, TagController.addTag);
+route.put("/tag", auth, shopkeeper, TagController.updateTag);
+route.delete("/tag/:_id", auth, shopkeeper, TagController.deleteTag);
 
 // ================== Service =====================
 route.get("/services", ServiceController.getServiceAll);
@@ -106,7 +118,9 @@ route.get("/orders", auth, OrderController.getOrderAll);
 route.get("/order/user", auth, OrderController.getOrderUser);
 route.get("/order/shop/:_id", auth, shopkeeper, OrderController.getOrderShop);
 route.post("/order", auth, OrderController.addOrder);
-route.delete("/order", auth, OrderController.cancelOrder);
+route.post("/order", auth, OrderController.cancelOrder);
+route.delete("/order", auth, shopkeeper, OrderController.confirmOrder);
+
 // =================== Order Detail =====================
 route.get("/order-detail/:_id", auth, OrderController.getOrderDetail);
 

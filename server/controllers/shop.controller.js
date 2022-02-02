@@ -39,8 +39,16 @@ export default class Shop {
   static async createShop(req, res) {
     try {
       let user_id = req.user._id;
-      let { name, imgFile, coverImg, phone, bank, address, openTime, closeTime } =
-        req.body;
+      let {
+        name,
+        imgFile,
+        coverImg,
+        phone,
+        bank,
+        address,
+        openTime,
+        closeTime,
+      } = req.body;
 
       if (!name) {
         return res.status(400).json({ msg: "please input name" });
@@ -48,9 +56,7 @@ export default class Shop {
       if (!phone) {
         return res.status(400).json({ msg: "please input phone" });
       }
-      if (!bank) {
-        return res.status(400).json({ msg: "please input bank" });
-      }
+
       if (!address) {
         return res.status(400).json({ msg: "please input address" });
       }
@@ -59,16 +65,6 @@ export default class Shop {
       }
       if (!closeTime) {
         return res.status(400).json({ msg: "please input closeTime" });
-      }
-
-      if (!bank.bankName) {
-        return res.status(400).json({ msg: "bank( please input bankName)" });
-      }
-      if (!bank.accountId) {
-        return res.status(400).json({ msg: "bank( please input accountId)" });
-      }
-      if (!bank.accountName) {
-        return res.status(400).json({ msg: "bank( please input accountName)" });
       }
 
       if (!address.village) {
@@ -88,19 +84,28 @@ export default class Shop {
       }
 
       const chkExist = await ShopModel.findOne({ user: user_id });
-      if (chkExist) return res.status(400).json({ msg: "you are already have shop." });
-      
-      const chkBankExist = await BankModel.findOne({ accountId: bank.accountId });
-      if (chkBankExist) return res.status(400).json({ msg: "your back account is already exist." });
+      if (chkExist)
+        return res.status(400).json({ msg: "you are already have shop." });
 
-      if(imgFile){
+      if (imgFile) {
         var imgUrl = await UploadImage(imgFile);
       }
-      if(coverImg){
+      if (coverImg) {
         var coverImgUrl = await UploadImage(coverImg);
       }
 
-      const banks = await BankModel.create(bank);
+      if (bank) {
+        const chkBankExist = await BankModel.findOne({
+          accountId: bank.accountId,
+        });
+        if (chkBankExist)
+          return res
+            .status(400)
+            .json({ msg: "your bank account is already exist." });
+
+        var banks = await BankModel.create(bank);
+        var bank_id = banks._id;
+      }
 
       if (req.user.auth === "admin") {
         if (!mongoose.isValidObjectId(data.user_id))
@@ -115,9 +120,9 @@ export default class Shop {
         openTime,
         closeTime,
         address,
-        bankAccount: banks._id,
+        bankAccount: bank_id,
         image: imgUrl,
-        coverImage: coverImgUrl
+        coverImage: coverImgUrl,
       };
 
       const shop = await ShopModel.create(data);
@@ -137,25 +142,14 @@ export default class Shop {
 
   static async updateShop(req, res) {
     try {
-      let {
-        shop_id,
-        name,
-        imgFile,
-        phone,
-        bank,
-        address,
-        openTime,
-        closeTime,
-      } = req.body;
+      let { shop_id, name, imgFile, phone, address, openTime, closeTime } =
+        req.body;
 
       if (!name) {
         return res.status(400).json({ msg: "please input name" });
       }
       if (!phone) {
         return res.status(400).json({ msg: "please input phone" });
-      }
-      if (!bank) {
-        return res.status(400).json({ msg: "please input bank" });
       }
       if (!address) {
         return res.status(400).json({ msg: "please input address" });
@@ -165,16 +159,6 @@ export default class Shop {
       }
       if (!closeTime) {
         return res.status(400).json({ msg: "please input closeTime" });
-      }
-
-      if (!bank.bankName) {
-        return res.status(400).json({ msg: "bank( please input bankName)" });
-      }
-      if (!bank.accountId) {
-        return res.status(400).json({ msg: "bank( please input accountId)" });
-      }
-      if (!bank.accountName) {
-        return res.status(400).json({ msg: "bank( please input accountName)" });
       }
 
       if (!address.village) {
@@ -200,8 +184,6 @@ export default class Shop {
       if (!mongoose.isValidObjectId(shop_id) || shop_id === "")
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
-      // const banks = await BankModel.create(bank)
-
       const data = {
         user: user_id,
         name,
@@ -209,7 +191,6 @@ export default class Shop {
         openTime,
         closeTime,
         address,
-        // bankAccount: banks._id,
         image: imgUrl,
       };
 
@@ -237,7 +218,105 @@ export default class Shop {
       );
       res.status(201).json({ msg: "Delete complete." });
     } catch (err) {
-      res.status(500).json({ msg: "Something went wrong", err });
+      res.status(400).json({ msg: "Something went wrong", err });
+    }
+  }
+
+  static async createBank(req, res) {
+    try {
+      const { shop_id, bankName, accountId, accountName } = req.body;
+      if (!shop_id) {
+        return res.status(400).json({ msg: "please input shop_id." });
+      }
+      if (!bankName) {
+        return res.status(400).json({ msg: "please input bankName." });
+      }
+      if (!accountId) {
+        return res.status(400).json({ msg: "please input accountId." });
+      }
+      if (!accountName) {
+        return res.status(400).json({ msg: "please input accountName." });
+      }
+
+      if (!mongoose.isValidObjectId(shop_id))
+        return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+
+      const chkBankExist = await BankModel.findOne({ accountId });
+
+      if (chkBankExist)
+        return res
+          .status(400)
+          .json({ msg: "this bank accountId is already exist." });
+
+      const bank = await BankModel.create({ bankName, accountId, accountName });
+      const shop = await ShopModel.findByIdAndUpdate(
+        shop_id,
+        { bankAccount: bank._id },
+        { new: true }
+      );
+      res.status(201).json({ msg: "Add bank account success.", bank });
+    } catch (err) {
+      res.status(400).json({ msg: "Something went wrong", err });
+    }
+  }
+
+  static async updateBank(req, res) {
+    try {
+      const { bank_id, bankName, accountId, accountName } = req.body;
+      if (!bank_id) {
+        return res.status(400).json({ msg: "please input bank_id." });
+      }
+      if (!bankName) {
+        return res.status(400).json({ msg: "please input bankName." });
+      }
+      if (!accountId) {
+        return res.status(400).json({ msg: "please input accountId." });
+      }
+      if (!accountName) {
+        return res.status(400).json({ msg: "please input accountName." });
+      }
+
+      if (!mongoose.isValidObjectId(bank_id))
+        return res.status(400).json({ msg: `Invalid id: ${bank_id}` });
+
+      const chkBankExist = await BankModel.findOne({
+        _id: { $ne: bank_id },
+        accountId,
+      });
+
+      if (chkBankExist)
+        return res
+          .status(400)
+          .json({ msg: "this bank accountId is already exist." });
+      const data = { bankName, accountId, accountName };
+      const bank = await BankModel.findByIdAndUpdate(
+        bank_id,
+        { $set: data },
+        { new: true }
+      );
+
+      res.status(201).json({ msg: "Update bank account success.", bank });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ msg: "Something went wrong", err });
+    }
+  }
+
+  static async deleteBank(req, res) {
+    try {
+      const bank_id = req.params._id;
+      if (!bank_id) {
+        return res.status(400).json({ msg: "please input bank_id." });
+      }
+
+      if (!mongoose.isValidObjectId(bank_id))
+        return res.status(400).json({ msg: `Invalid id: ${bank_id}` });
+
+      const bank = await BankModel.findByIdAndDelete(bank_id);
+
+      res.status(201).json({ msg: "Delete bank account success.", bank });
+    } catch (err) {
+      res.status(400).json({ msg: "Something went wrong", err });
     }
   }
 }

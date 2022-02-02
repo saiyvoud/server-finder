@@ -12,7 +12,6 @@ const shopSchema = mongoose.Schema(
     bankAccount: {
       type: Schema.Types.ObjectId,
       ref: "BankAccount",
-      required: true,
       unique: 1,
     },
     name: {
@@ -59,6 +58,14 @@ const shopSchema = mongoose.Schema(
     closeTime: {
       type: String,
       maxlength: 15,
+    },
+    openDay: {
+      type: String,
+      maxlength: 30,
+    },
+    closeDay: {
+      type: String,
+      maxlength: 30,
     },
     isDelete: {
       type: Boolean,
