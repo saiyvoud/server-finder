@@ -111,18 +111,18 @@ export default class Shop {
         var coverImgUrl = await UploadImage(coverImg);
       }
 
-      // if (bank) {
-      //   const chkBankExist = await BankModel.findOne({
-      //     accountId: bank.accountId,
-      //   });
-      //   if (chkBankExist)
-      //     return res
-      //       .status(400)
-      //       .json({ msg: "your bank account is already exist." });
+      if (bankName) {
+        const chkBankExist = await BankModel.findOne({
+          accountId
+        });
+        if (chkBankExist)
+          return res
+            .status(400)
+            .json({ msg: "your bank account is already exist." });
 
-      //   var banks = await BankModel.create(bank);
-      //   var bank_id = banks._id;
-      // }
+        var banks = await BankModel.create({bankName, accountId, accountName});
+        var bank_id = banks._id;
+      }
 
       if (req.user.auth === "admin") {
         if (!mongoose.isValidObjectId(data.user_id))
@@ -167,7 +167,7 @@ export default class Shop {
 
   static async updateShop(req, res) {
     try {
-      let { shop_id, name, imgFile, phone, address, openTime, closeTime } =
+      let { shop_id, name, phone, village, district, province, lat, lng, openTime, closeTime } =
         req.body;
 
       if (!name) {
@@ -176,9 +176,9 @@ export default class Shop {
       if (!phone) {
         return res.status(400).json({ msg: "please input phone" });
       }
-      if (!address) {
-        return res.status(400).json({ msg: "please input address" });
-      }
+      // if (!address) {
+      //   return res.status(400).json({ msg: "please input address" });
+      // }
       if (!openTime) {
         return res.status(400).json({ msg: "please input openTime" });
       }
@@ -186,46 +186,43 @@ export default class Shop {
         return res.status(400).json({ msg: "please input closeTime" });
       }
 
-      if (!address.village) {
+      if (!village) {
         return res.status(400).json({ msg: "please input village" });
       }
-      if (!address.district) {
+      if (!district) {
         return res.status(400).json({ msg: "please input district" });
       }
-      if (!address.province) {
+      if (!province) {
         return res.status(400).json({ msg: "please input province" });
       }
-      if (!address.lat) {
+      if (!lat) {
         return res.status(400).json({ msg: "please input lat" });
       }
-      if (!address.lng) {
+      if (!lng) {
         return res.status(400).json({ msg: "please input lng" });
-      }
-
-      if (imgFile) {
-        var imgUrl = await UploadImage(imgFile);
       }
 
       if (!mongoose.isValidObjectId(shop_id) || shop_id === "")
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
       const data = {
-        user: user_id,
         name,
         phone,
         openTime,
         closeTime,
-        address,
-        image: imgUrl,
+        address:{
+          village, district, province, lat, lng
+        }
       };
 
       const shop = await ShopModel.findOneAndUpdate(
-        { _id: data.shop_id },
+        { _id: shop_id },
         { $set: data },
         { new: true }
       );
       res.status(201).json({ msg: "Update complete.", shop });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ msg: "Something went wrong", err });
     }
   }
@@ -243,6 +240,7 @@ export default class Shop {
       );
       res.status(201).json({ msg: "Delete complete." });
     } catch (err) {
+      console.log(err);
       res.status(400).json({ msg: "Something went wrong", err });
     }
   }

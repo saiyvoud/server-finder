@@ -12,7 +12,6 @@ const shopSchema = mongoose.Schema(
     bankAccount: {
       type: Schema.Types.ObjectId,
       ref: "BankAccount",
-      unique: 1,
     },
     name: {
       type: String,
