@@ -54,18 +54,22 @@ const shopSchema = mongoose.Schema(
     openTime: {
       type: String,
       maxlength: 15,
+      required: true,
     },
     closeTime: {
       type: String,
       maxlength: 15,
+      required: true,
     },
     openDay: {
       type: String,
       maxlength: 30,
+      required: true,
     },
     closeDay: {
       type: String,
       maxlength: 30,
+      required: true,
     },
     isDelete: {
       type: Boolean,

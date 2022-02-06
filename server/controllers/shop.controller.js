@@ -48,6 +48,8 @@ export default class Shop {
         address,
         openTime,
         closeTime,
+        openDay,
+        closeDay
       } = req.body;
 
       if (!name) {
@@ -65,6 +67,13 @@ export default class Shop {
       }
       if (!closeTime) {
         return res.status(400).json({ msg: "please input closeTime" });
+      }
+
+      if (!openDay) {
+        return res.status(400).json({ msg: "please input openDay" });
+      }
+      if (!closeDay) {
+        return res.status(400).json({ msg: "please input closeDay" });
       }
 
       if (!address.village) {
@@ -119,10 +128,13 @@ export default class Shop {
         phone,
         openTime,
         closeTime,
+        openDay,
+        closeDay,
         address,
         bankAccount: bank_id,
         image: imgUrl,
         coverImage: coverImgUrl,
+
       };
 
       const shop = await ShopModel.create(data);
