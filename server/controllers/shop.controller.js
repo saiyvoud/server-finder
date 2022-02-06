@@ -44,12 +44,20 @@ export default class Shop {
         imgFile,
         coverImg,
         phone,
-        bank,
-        address,
+        // bank,
+        // address,
+        bankName,
+        accountId,
+        accountName,
+        village,
+        district,
+        province,
+        lat,
+        lng,
         openTime,
         closeTime,
         openDay,
-        closeDay
+        closeDay,
       } = req.body;
 
       if (!name) {
@@ -59,9 +67,9 @@ export default class Shop {
         return res.status(400).json({ msg: "please input phone" });
       }
 
-      if (!address) {
-        return res.status(400).json({ msg: "please input address" });
-      }
+      // if (!address) {
+      //   return res.status(400).json({ msg: "please input address" });
+      // }
       if (!openTime) {
         return res.status(400).json({ msg: "please input openTime" });
       }
@@ -76,19 +84,19 @@ export default class Shop {
         return res.status(400).json({ msg: "please input closeDay" });
       }
 
-      if (!address.village) {
+      if (!village) {
         return res.status(400).json({ msg: "please input village" });
       }
-      if (!address.district) {
+      if (!district) {
         return res.status(400).json({ msg: "please input district" });
       }
-      if (!address.province) {
+      if (!province) {
         return res.status(400).json({ msg: "please input province" });
       }
-      if (!address.lat) {
+      if (!lat) {
         return res.status(400).json({ msg: "please input lat" });
       }
-      if (!address.lng) {
+      if (!lng) {
         return res.status(400).json({ msg: "please input lng" });
       }
 
@@ -103,18 +111,18 @@ export default class Shop {
         var coverImgUrl = await UploadImage(coverImg);
       }
 
-      if (bank) {
-        const chkBankExist = await BankModel.findOne({
-          accountId: bank.accountId,
-        });
-        if (chkBankExist)
-          return res
-            .status(400)
-            .json({ msg: "your bank account is already exist." });
+      // if (bank) {
+      //   const chkBankExist = await BankModel.findOne({
+      //     accountId: bank.accountId,
+      //   });
+      //   if (chkBankExist)
+      //     return res
+      //       .status(400)
+      //       .json({ msg: "your bank account is already exist." });
 
-        var banks = await BankModel.create(bank);
-        var bank_id = banks._id;
-      }
+      //   var banks = await BankModel.create(bank);
+      //   var bank_id = banks._id;
+      // }
 
       if (req.user.auth === "admin") {
         if (!mongoose.isValidObjectId(data.user_id))
@@ -130,11 +138,16 @@ export default class Shop {
         closeTime,
         openDay,
         closeDay,
-        address,
+        address:{
+          village,
+          district,
+          province,
+          lat,
+          lng
+        },
         bankAccount: bank_id,
         image: imgUrl,
         coverImage: coverImgUrl,
-
       };
 
       const shop = await ShopModel.create(data);
