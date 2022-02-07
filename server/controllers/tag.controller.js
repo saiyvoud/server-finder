@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import TagModel from "../models/tag.model.js";
+import UploadImage from "../utils/uploadImage.js";
 export default class Review {
   static async getAllTag(req, res) {
     try {
@@ -12,14 +13,20 @@ export default class Review {
 
   static async addTag(req, res) {
     try {
-      const { name, category } = req.body;
+      const { name, category, imgFile } = req.body;
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
       }
       if (!category) {
         return res.status(400).json({ msg: "please input category." });
       }
-      const tag = await TagModel.create({name, category});
+      if (!imgFile) {
+        return res.status(400).json({ msg: "please input imgFile." });
+      }
+
+      const imgUrl = await UploadImage(imgFile);
+
+      const tag = await TagModel.create({name, category, image: imgUrl});
 
       res.status(201).json({ msg: "Create new tag.", tag });
     } catch (err) {
@@ -30,20 +37,26 @@ export default class Review {
 
   static async updateTag(req, res) {
     try {
-      const { tag_id, name } = req.body;
-      if (!name) {
-        return res.status(400).json({ msg: "please input name." });
-      }
+      const { tag_id, name, imgFile } = req.body;
       
       if (!tag_id) {
         return res.status(400).json({ msg: "tag_id can not be null" });
       }
+      if (!name) {
+        return res.status(400).json({ msg: "please input name." });
+      }
+      if (!imgFile) {
+        return res.status(400).json({ msg: "please input imgFile." });
+      }
+      
       if (!mongoose.isValidObjectId(tag_id))
         return res.status(400).json({ msg: "Invalid ID " + tag_id });
 
+      const imgUrl = await UploadImage(imgFile);
+
       const tag = await TagModel.findByIdAndUpdate(
         tag_id,
-        { name },
+        { name, image: imgUrl },
         { new: true }
       );
       res.status(201).json({ msg: "Update tag complete", tag });

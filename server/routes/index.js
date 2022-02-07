@@ -118,8 +118,8 @@ route.get("/orders", auth, OrderController.getOrderAll);
 route.get("/order/user", auth, OrderController.getOrderUser);
 route.get("/order/shop/:_id", auth, shopkeeper, OrderController.getOrderShop);
 route.post("/order", auth, OrderController.addOrder);
-route.post("/order", auth, OrderController.cancelOrder);
-route.delete("/order", auth, shopkeeper, OrderController.confirmOrder);
+route.delete("/order", auth, OrderController.cancelOrder);
+route.post("/order/confirm/:_id", auth, shopkeeper, OrderController.confirmOrder);
 
 // =================== Order Detail =====================
 route.get("/order-detail/:_id", auth, OrderController.getOrderDetail);

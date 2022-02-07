@@ -54,7 +54,7 @@ export default class Service {
 
   static async postService(req, res) {
     try {
-      let { shop_id, name, category, price, description, imgFile } = req.body;
+      let { shop_id, name, category, price, description, imgUrl } = req.body;
 
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
@@ -66,20 +66,22 @@ export default class Service {
         return res.status(400).json({ msg: "please input price." });
       }
 
-      if (price<=0) {
+      if (price <= 0) {
         return res.status(400).json({ msg: "price must be more then 0." });
       }
 
       if (!description) {
         return res.status(400).json({ msg: "please input description." });
       }
-
+      if (!imgUrl) {
+        return res.status(400).json({ msg: "please input imgUrl." });
+      }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
-      if (imgFile) {
-        var imgUrl = await UploadImage(imgFile);
-      }
+      // if (imgFile) {
+      //   var imgUrl = await UploadImage(imgFile);
+      // }
 
       const data = {
         shop: shop_id,
@@ -99,7 +101,8 @@ export default class Service {
 
   static async updateService(req, res) {
     try {
-      let { service_id, name, category, price, description, imgFile } = req.body;
+      let { service_id, name, category, price, description, imgFile } =
+        req.body;
 
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
@@ -120,8 +123,8 @@ export default class Service {
       if (imgFile) {
         var imgUrl = await UploadImage(imgFile);
       }
-      
-      const data = {name, category, price, description}
+
+      const data = { name, category, price, description };
 
       const service = await ServiceController.findByIdAndUpdate(
         { _id: data.service_id },

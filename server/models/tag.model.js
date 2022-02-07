@@ -10,6 +10,10 @@ const tagSchema = mongoose.Schema({
     enum: ["ລົດຈັກ", "ລົດໃຫຍ່", "car", "motorcycle", "motorbike"],
     maxlength: 20,
   },
+  image:{
+    type: String,
+    default: ''
+  },
   isDelete: {
     type: Boolean,
     default: 0,
