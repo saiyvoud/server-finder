@@ -4,7 +4,7 @@ import UploadImage from "../utils/uploadImage.js";
 export default class Review {
   static async getAllTag(req, res) {
     try {
-      const tag = await TagModel.find({});
+      const tag = await TagModel.find({isDelete: false});
       res.status(200).json({ msg: "Get all tag", tag });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
