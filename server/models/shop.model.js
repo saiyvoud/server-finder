@@ -18,6 +18,11 @@ const shopSchema = mongoose.Schema(
       required: true,
       maxlength: 200,
     },
+    category: {
+      type: String,
+      enum: ["ລົດຈັກ", "ລົດໃຫຍ່", "car", "motorcycle", "motorbike"],
+      maxlength: 20,
+    },
     image: {
       type: String,
       default: "",
