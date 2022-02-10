@@ -27,7 +27,10 @@ export default class Service {
       const service = await ServiceController.find({ shop: _id }).sort({
         _id: -1,
       });
-      res.status(200).json({ service });
+
+      service.length>0? res.status(200).json({ msg:`your shop's services.`, service }): res.status(200).json({msg:'you do not have any service.'})
+
+      
     } catch (err) {
       console.log(err);
       res.status(404).json({ msg: "Something Wrong.", err });
@@ -120,18 +123,18 @@ export default class Service {
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });
 
-      if (imgFile) {
-        var imgUrl = await UploadImage(imgFile);
-      }
+      // if (imgFile) {
+      //   var imgUrl = await UploadImage(imgFile);
+      // }
 
       const data = { name, category, price, description };
 
       const service = await ServiceController.findByIdAndUpdate(
-        { _id: data.service_id },
+        { _id: service_id },
         { $set: data },
         { new: true }
       );
-      res.status(200).json({ msg: "Update complete.", service });
+      res.status(200).json({ msg: "Update complete.", service })
     } catch (err) {
       res.status(404).json({ msg: "Something Wrong.", err });
     }

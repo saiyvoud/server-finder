@@ -41,6 +41,7 @@ export default class Shop {
       let user_id = req.user._id;
       let {
         name,
+        category,
         imgFile,
         coverImg,
         phone,
@@ -67,9 +68,9 @@ export default class Shop {
         return res.status(400).json({ msg: "please input phone" });
       }
 
-      // if (!address) {
-      //   return res.status(400).json({ msg: "please input address" });
-      // }
+      if (!category) {
+        return res.status(400).json({ msg: "please input category" });
+      }
       if (!openTime) {
         return res.status(400).json({ msg: "please input openTime" });
       }

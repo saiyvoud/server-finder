@@ -20,6 +20,11 @@ const serviceSchema = mongoose.Schema({
     enum:['ລົດຈັກ', 'ລົດໃຫຍ່', 'car', 'motorcycle', 'motorbike'],
     maxlength:20
   },
+  service_type:{
+    type:String,
+    enum:['ພາຍໃນ', 'ພາຍນອກ', 'inside', 'outside'],
+    maxlength:20
+  },
   price: {
     type: Number,
     required: true,

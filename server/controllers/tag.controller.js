@@ -4,8 +4,18 @@ import UploadImage from "../utils/uploadImage.js";
 export default class Review {
   static async getAllTag(req, res) {
     try {
-      const tag = await TagModel.find({isDelete: false});
+      const tag = await TagModel.find({ isDelete: false });
       res.status(200).json({ msg: "Get all tag", tag });
+    } catch (err) {
+      res.status(404).json({ msg: "Something wrong", err });
+    }
+  }
+
+  static async getShopTag(req, res) {
+    try {
+      const { category } = req.params;
+      const tag = await TagModel.find({ category, isDelete: false });
+      res.status(200).json({ msg: "Get shop tag", tag });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
     }
@@ -26,7 +36,7 @@ export default class Review {
 
       const imgUrl = await UploadImage(imgFile);
 
-      const tag = await TagModel.create({name, category, image: imgUrl});
+      const tag = await TagModel.create({ name, category, image: imgUrl });
 
       res.status(201).json({ msg: "Create new tag.", tag });
     } catch (err) {
@@ -38,7 +48,7 @@ export default class Review {
   static async updateTag(req, res) {
     try {
       const { tag_id, name, imgFile } = req.body;
-      
+
       if (!tag_id) {
         return res.status(400).json({ msg: "tag_id can not be null" });
       }
@@ -48,7 +58,7 @@ export default class Review {
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
       }
-      
+
       if (!mongoose.isValidObjectId(tag_id))
         return res.status(400).json({ msg: "Invalid ID " + tag_id });
 

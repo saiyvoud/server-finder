@@ -60,6 +60,7 @@ route.delete("/bank/:_id", auth, shopkeeper, ShopController.deleteBank);
 
 // ================== Tag ==========================
 route.get("/tags", auth, shopkeeper, TagController.getAllTag);
+route.get("/tag/shop/:category", auth, shopkeeper, TagController.getShopTag);
 route.post("/tag", auth, shopkeeper, TagController.addTag);
 route.put("/tag", auth, shopkeeper, TagController.updateTag);
 route.delete("/tag/:_id", auth, shopkeeper, TagController.deleteTag);
