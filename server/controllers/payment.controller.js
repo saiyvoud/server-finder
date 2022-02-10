@@ -75,7 +75,7 @@ if(!shop_id){
       if(!totalCost){
         return res.status(404).json({ msg: "please input totalCost." });
       }
-      if (payBy) {
+      if (!payBy) {
         return res.status(400).json({ msg: "please input payBy." });
       }
       if (!mongoose.isValidObjectId(order_id) || !order_id) {
@@ -90,7 +90,7 @@ if(!shop_id){
       if (!checkOrder) {
         return res.status(404).json({ msg: "This order do not exist." });
       }
-      if (totalCost !== checkOrder.totalCost) {
+      if (totalCost != checkOrder.totalCost) {
         return res
           .status(404)
           .json({
@@ -119,16 +119,19 @@ if(!shop_id){
 
       await InvoiceModel.create(invoice_data);
       await PaymentModel.create(payment_data);
-      await OrderModel.findOneAndUpdate(
-        { order: order_id },
-        { status: "paid" }
+      const order = await OrderModel.findOneAndUpdate(
+        { _id: order_id },
+        { status: "paid" },
+        {new:true}
       );
       await OrderDetailModel.updateMany(
         { order: order_id },
-        { status: "paid" }
+        { status: "paid" },
+        {new:true}
+
       );
 
-      res.status(201).json({ msg: "Confirm Payment Success..." });
+      res.status(201).json({ msg: "Confirm Payment Success...", order });
     } catch (err) {
       console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
