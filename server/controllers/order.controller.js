@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import { OrderModel, OrderDetailModel } from "../models/order.model.js";
 import ServiceModel from "../models/service.model.js";
+import NotifController from "./notification.controller.js";
 
 export default class Model {
   // ========= Order =============
@@ -24,7 +25,6 @@ export default class Model {
           path: "address",
           select: "village district provice lat lng",
         },
-        
       ]);
       res.status(200).json({ msg: "All Order", order });
     } catch (err) {
@@ -51,10 +51,10 @@ export default class Model {
           path: "address",
           select: "village district provice lat lng",
         },
-        {
-          path: "service",
-          select: "name image price category",
-        },
+        // {
+        //   path: "service",
+        //   select: "name image price category",
+        // },
       ]);
       res.status(200).json({ msg: "Shop Order", order });
     } catch (err) {
@@ -78,20 +78,21 @@ export default class Model {
           path: "address",
           select: "village district provice lat lng",
         },
-        {
-          path: "service",
-          select: "name image price category",
-        },
+        // {
+        //   path: "service",
+        //   select: "name image price category",
+        // },
       ]);
       res.status(200).json({ msg: "User Order", order });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
 
   // static async addOrder(req, res) {
   //   try {
-      
+
   //     const user_id = req.user._id;
 
   //     let { shop_id, address_id, car_id, service_id, price, description } = req.body;
@@ -119,7 +120,7 @@ export default class Model {
   //       !mongoose.isValidObjectId(car_id) ||
   //       !mongoose.isValidObjectId(shop_id) ||
   //       !mongoose.isValidObjectId(address_id) ||
-  //       !mongoose.isValidObjectId(service_id) 
+  //       !mongoose.isValidObjectId(service_id)
   //     ) {
   //       return res.status(404).json({ msg: "Invalid ID" });
   //     }
@@ -216,6 +217,17 @@ export default class Model {
       const order = await OrderModel.create(order_data);
       const orderDetail = await OrderDetailModel.create(orderService);
 
+      const title = "new order";
+      const body = "new order is waiting. please check...";
+
+      const chk = await NotifController.postNotifToShop(
+        shop_id,
+        user_id,
+        title,
+        body
+      );
+      console.log("check Notif", chk);
+
       res.status(200).json({ msg: "Add order success.", order, orderDetail });
     } catch (err) {
       console.log(err);
@@ -248,6 +260,13 @@ export default class Model {
       if (!order) {
         return res.status(404).json({ msg: "this order is not found." });
       }
+
+      const title = 'order has confirm'
+      const body = 'your order has confirm. shop is goging please wait.'
+
+      const chk = await NotifController.postNotifToUser(order.user_id, order.shop_id, title, body)
+      console.log('chk ', chk);
+
       res.status(200).json({ msg: "Confirm Order Complete.", order });
     } catch (err) {
       console.log(err);

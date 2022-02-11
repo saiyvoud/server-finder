@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
-import ServiceController from "../models/service.model.js";
+import ServiceModel from "../models/service.model.js";
+import ShopModel from "../models/shop.model.js";
 import UploadImage from "../utils/uploadImage.js";
 
 export default class Service {
   static async getServiceAll(req, res) {
     try {
-      const service = await ServiceController.find({})
+      const service = await ServiceModel.find({})
         .populate({
           path: "shop",
           select: "name phone address location openTime closeTime",
@@ -24,7 +25,7 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceController.find({ shop: _id }).sort({
+      const service = await ServiceModel.find({ shop: _id }).sort({
         _id: -1,
       });
 
@@ -43,7 +44,7 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceController.findOne({ _id }).populate({
+      const service = await ServiceModel.findOne({ _id }).populate({
         path: "shop",
         select: "name phone address location openTime closeTime",
         model: "Shop",
@@ -86,6 +87,12 @@ export default class Service {
       //   var imgUrl = await UploadImage(imgFile);
       // }
 
+      const shop = await ShopModel.findOne({ _id: shop_id, category })
+
+      if(!shop){
+        return res.status(400).json({ msg: `category is not match with your shop's category.` });
+      }
+
       const data = {
         shop: shop_id,
         image: imgUrl,
@@ -94,7 +101,7 @@ export default class Service {
         price,
         description,
       };
-      const service = await ServiceController.create(data);
+      const service = await ServiceModel.create(data);
       res.status(201).json({ service });
     } catch (err) {
       console.log(err);
@@ -129,7 +136,7 @@ export default class Service {
 
       const data = { name, category, price, description };
 
-      const service = await ServiceController.findByIdAndUpdate(
+      const service = await ServiceModel.findByIdAndUpdate(
         { _id: service_id },
         { $set: data },
         { new: true }
@@ -147,7 +154,7 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      await ServiceController.findOneAndUpdate(
+      await ServiceModel.findOneAndUpdate(
         { _id },
         { isDelete: true },
         { new: true }

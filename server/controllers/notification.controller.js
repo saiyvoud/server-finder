@@ -50,7 +50,7 @@ export default class Notification {
 
   static async postNotif(req, res) {
     try {
-      let data = body;
+      let data = req.body;
 
       if (!data.image) {
         return res.status(404).json({ msg: "please input image." });
@@ -74,6 +74,30 @@ export default class Notification {
       res.status(201).json({ msg: "Post New Notification", notification });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
+    }
+  }
+
+  static async postNotifToShop(shop_id, user_id, title, body) {
+    try {
+      // const title = 'new order'
+      // const body = 'new order is waiting. please check...'
+      
+      const data = {shop:shop_id, user: user_id, title, body, for:'shop'}
+      const notif = await NotifModel.create(data);
+      console.log('notif ',notif);
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+  static async postNotifToUser(user_id, shop_id, title, body) {
+    try {      
+      const data = {shop:shop_id, user: user_id, title, body, for:'user'}
+      const notif = await NotifModel.create(data);
+      console.log('notif ',notif);
+      return true
+    } catch (err) {
+      return false
     }
   }
 
