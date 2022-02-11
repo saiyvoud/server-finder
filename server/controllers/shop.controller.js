@@ -108,6 +108,7 @@ export default class Shop {
       if (imgFile) {
         var imgUrl = await UploadImage(imgFile);
       }
+      
       if (coverImg) {
         var coverImgUrl = await UploadImage(coverImg);
       }
@@ -134,6 +135,7 @@ export default class Shop {
       const data = {
         user: user_id,
         name,
+        category,
         phone,
         openTime,
         closeTime,

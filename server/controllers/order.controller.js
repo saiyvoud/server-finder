@@ -167,9 +167,9 @@ export default class Model {
       if (!address_id) {
         return res.status(400).json({ msg: "please input address_id." });
       }
-      if (!car_id) {
-        return res.status(400).json({ msg: "please input car_id." });
-      }
+      // if (!car_id) {
+      //   return res.status(400).json({ msg: "please input car_id." });
+      // }
       if (!totalCost) {
         return res.status(400).json({ msg: "please input totalCost." });
       }

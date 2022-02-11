@@ -10,7 +10,6 @@ const orderSchema = mongoose.Schema(
     car: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "Car",
-      required: true,
     },
     shop: {
       type: mongoose.SchemaTypes.ObjectId,
