@@ -75,6 +75,10 @@ const shopSchema = mongoose.Schema(
       maxlength: 30,
       required: true,
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
     isDelete: {
       type: Boolean,
       default: false,

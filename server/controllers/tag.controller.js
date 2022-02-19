@@ -47,7 +47,7 @@ export default class Review {
 
   static async updateTag(req, res) {
     try {
-      const { tag_id, name, imgFile } = req.body;
+      const { tag_id, name, imgFile, oldImg } = req.body;
 
       if (!tag_id) {
         return res.status(400).json({ msg: "tag_id can not be null" });
@@ -62,10 +62,12 @@ export default class Review {
       if (!mongoose.isValidObjectId(tag_id))
         return res.status(400).json({ msg: "Invalid ID " + tag_id });
 
-      const imgUrl = await UploadImage(imgFile);
+        if(imgFile){
+          var imgUrl = await UploadImage(imgFile, oldImg);
+        }
 
       const tag = await TagModel.findByIdAndUpdate(
-        tag_id,
+        tag_id ,
         { name, image: imgUrl },
         { new: true }
       );

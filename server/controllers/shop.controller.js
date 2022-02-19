@@ -248,6 +248,25 @@ export default class Shop {
     }
   }
 
+  static async activeShop(req, res) {
+    try {
+      const shop_id = req.params.shop_id;
+
+      if (!mongoose.isValidObjectId(shop_id))
+        return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+
+      const shop = await ShopModel.findOneAndUpdate(
+        { _id: shop_id },
+        { isActive: true },
+        { new: true }
+      );
+      res.status(201).json({ success: true, msg: "Active shop complete.", shop });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ msg: "Something went wrong", err });
+    }
+  }
+
   static async createBank(req, res) {
     try {
       const { shop_id, bankName, accountId, accountName } = req.body;

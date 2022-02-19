@@ -25,33 +25,34 @@ import { shopkeeper } from "../middlewares/shopkeeper.js";
 const route = express.Router();
 
 // =================== User Routes ===================
-route.get("/users", auth, UserController.userAll);
+route.get("/users", auth,admin,  UserController.userAll);
 route.get("/user-info", auth, UserController.userInfo);
-route.get("/user/:user_id", UserController.userOne);
+route.get("/user/:user_id",auth, admin, UserController.userOne);
 route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
 route.post("/user/logout", auth, UserController.logOut);
-route.put("/user/update", auth, UserController.updateUser);
-route.post("/upgrade-user/:_id", auth, UserController.upgradeUser);
+route.put("/user/update", auth, admin,  UserController.updateUser);
+route.post("/upgrade-user/:_id", auth, admin,  UserController.upgradeUser);
 route.put("/user/edit-password", auth, UserController.editPassword);
 route.put("/user/forgot-password", UserController.forgotPassword);
 
 //Upload Image
 route.post("/user/upload-image", auth, ImageController.uploadUserImage);
-route.post("/shop/upload-image", auth, ImageController.uploadShopImage);
+route.post("/shop/upload-image", auth, shopkeeper,  ImageController.uploadShopImage);
 route.post(
   "/shop/upload-cover-image",
   auth,
   ImageController.uploadShopCoverImage
 );
-route.post("/service/upload-image", auth, ImageController.uploadServiceImage);
+route.post("/service/upload-image", shopkeeper, auth, ImageController.uploadServiceImage);
 
 // ================== Shop ============================
 route.get("/shops", ShopController.AllShop);
 route.get("/shop/owner", auth, shopkeeper, ShopController.OwnShop);
 route.post("/shop", auth, ShopController.createShop);
 route.put("/shop", auth, shopkeeper, ShopController.updateShop);
-route.delete("/shop/:shop_id", auth, ShopController.deleteShop);
+route.delete("/shop/:shop_id", auth, shopkeeper, ShopController.deleteShop);
+route.put("/active-shop/:shop_id", auth, admin, ShopController.activeShop);
 
 // ================== Bank account ==========================
 route.post("/bank", auth, shopkeeper, ShopController.createBank);
@@ -61,9 +62,9 @@ route.delete("/bank/:_id", auth, shopkeeper, ShopController.deleteBank);
 // ================== Tag ==========================
 route.get("/tags", auth, shopkeeper, TagController.getAllTag);
 route.get("/tag/shop/:category", auth, shopkeeper, TagController.getShopTag);
-route.post("/tag", auth, shopkeeper, TagController.addTag);
-route.put("/tag", auth, shopkeeper, TagController.updateTag);
-route.delete("/tag/:_id", auth, shopkeeper, TagController.deleteTag);
+route.post("/tag", auth, admin, TagController.addTag);
+route.put("/tag", auth, admin, TagController.updateTag);
+route.delete("/tag/:_id", auth, admin, TagController.deleteTag);
 
 // ================== Service =====================
 route.get("/services", ServiceController.getServiceAll);
@@ -109,13 +110,13 @@ route.put("/report", auth, ReportController.updateReport);
 route.delete("/report/:_id", auth, ReportController.unReport);
 
 // ==================== Banner ====================
-route.get("/banner", auth, BannerController.getAllBanner);
-route.post("/banner", auth, BannerController.createBanner);
-route.put("/banner", auth, BannerController.updateBanner);
-route.delete("/banner/:_id", auth, BannerController.deleteBanner);
+route.get("/banner", auth, admin, BannerController.getAllBanner);
+route.post("/banner", auth, admin, BannerController.createBanner);
+route.put("/banner", auth, admin, BannerController.updateBanner);
+route.delete("/banner/:_id", auth, admin, BannerController.deleteBanner);
 
 // ==================== Order ====================
-route.get("/orders", auth, OrderController.getOrderAll);
+route.get("/orders", auth, admin, OrderController.getOrderAll);
 route.get("/order/user", auth, OrderController.getOrderUser);
 route.get("/order/shop/:_id", auth, shopkeeper, OrderController.getOrderShop);
 route.post("/order", auth, OrderController.addOrder);
@@ -135,6 +136,7 @@ route.get(
 );
 route.post("/payment", auth, PaymentController.confirmPayment);
 route.delete("/payment", auth, PaymentController.cancelPayment);
+
 //===================== Invoice =====================
 route.get("/invoices", auth, PaymentController.getInvoiceAll);
 route.get(
@@ -152,20 +154,21 @@ route.post(
 route.post(
   "/transfer/confirm/:_id",
   auth,
-  shopkeeper,
+  admin,
   PaymentController.confirmTransfer
 );
 
 // ================== Notification ====================
-route.get("/notifications", auth, NotifController.NotifAll);
-route.get("/notification/admin", auth, NotifController.NotifAdmin);
+route.get("/notifications", auth, admin, NotifController.NotifAll);
+route.get("/notification/admin", auth, admin, NotifController.NotifAdmin);
 route.get(
   "/notification/shop/:_id",
   auth,
   shopkeeper,
   NotifController.NotifShop
 );
-route.get("/notification/user", NotifController.NotifUser);
+
+route.get("/notification/user", auth, NotifController.NotifUser);
 route.post("/notification", auth, NotifController.postNotif);
 route.put("/notification", auth, NotifController.updateNotif);
 route.delete("/notification/:_id", auth, NotifController.removeNotif);

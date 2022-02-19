@@ -102,7 +102,7 @@ export default class Service {
         description,
       };
       const service = await ServiceModel.create(data);
-      res.status(201).json({ service });
+      res.status(201).json({ msg: "Create service complete", service });
     } catch (err) {
       console.log(err);
       res.status(404).json({ msg: "Something Wrong.", err });
