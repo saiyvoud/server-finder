@@ -11,11 +11,11 @@ export default class Model {
       const order = await OrderModel.find({}).populate([
         {
           path: "user",
-          select: "firstname lastname tel",
+          select: "firstname lastname phone",
         },
         {
           path: "shop",
-          select: "name tel address",
+          select: "name phone address",
         },
         {
           path: "car",
@@ -41,7 +41,7 @@ export default class Model {
       const order = await OrderModel.find({ shop: shop_id }).populate([
         {
           path: "user",
-          select: "firstname lastname tel",
+          select: "firstname lastname phone",
         },
         {
           path: "car",
@@ -68,7 +68,7 @@ export default class Model {
       const order = await OrderModel.find({ user: user_id }).populate([
         {
           path: "shop",
-          select: "name tel address",
+          select: "name phone address",
         },
         {
           path: "car",
@@ -329,7 +329,7 @@ export default class Model {
           select: "name category price description",
         },
       ]);
-      res.status(200).json({ msg: "User Order", orderDetail });
+      res.status(200).json({ msg: "Order Detail", orderDetail });
     } catch (err) {
       res.status(404).json({ msg: "Something wrong", err });
     }

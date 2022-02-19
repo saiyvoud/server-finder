@@ -84,7 +84,7 @@ if(!shop_id){
 
       const checkOrder = await OrderModel.findOne({
         _id: order_id,
-        status: "order",
+        status: "goging",
       });
 
       if (!checkOrder) {
@@ -212,6 +212,9 @@ if(!shop_id){
           select: "shop",
         })
         .sort({ _id: -1 });
+
+      const inv = invoice.filter((val)=> val.order == null);
+
       res.status(200).json({ msg: "Get Shop Invoice.", invoice });
     } catch (err) {
       console.log(err);

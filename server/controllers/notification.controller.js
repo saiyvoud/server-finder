@@ -91,6 +91,7 @@ export default class Notification {
       return false
     }
   }
+  
   static async postNotifToUser(user_id, shop_id, title, body) {
     try {      
       const data = {shop:shop_id, user: user_id, title, body, for:'user'}
