@@ -170,7 +170,7 @@ export default class Shop {
 
   static async updateShop(req, res) {
     try {
-      let { shop_id, name, phone, village, district, province, lat, lng, openTime, closeTime } =
+      let { shop_id, name, phone, village, district, province, lat, lng, openTime, closeTime, closeDay, openDay } =
         req.body;
 
       if (!name) {
@@ -188,7 +188,12 @@ export default class Shop {
       if (!closeTime) {
         return res.status(400).json({ msg: "please input closeTime" });
       }
-
+      if (!openDay) {
+        return res.status(400).json({ msg: "please input openDay" });
+      }
+      if (!closeDay) {
+        return res.status(400).json({ msg: "please input closeDay" });
+      }
       if (!village) {
         return res.status(400).json({ msg: "please input village" });
       }
@@ -213,6 +218,8 @@ export default class Shop {
         phone,
         openTime,
         closeTime,
+        closeDay,
+        openDay,
         address:{
           village, district, province, lat, lng
         }
@@ -223,7 +230,7 @@ export default class Shop {
         { $set: data },
         { new: true }
       );
-      res.status(201).json({ msg: "Update complete.", shop });
+      res.status(200).json({ msg: "Update complete.", shop });
     } catch (err) {
       console.log(err);
       res.status(500).json({ msg: "Something went wrong", err });
@@ -241,7 +248,7 @@ export default class Shop {
         { isDelete: true },
         { new: true }
       );
-      res.status(201).json({ msg: "Delete complete." });
+      res.status(200).json({ msg: "Delete complete." });
     } catch (err) {
       console.log(err);
       res.status(400).json({ msg: "Something went wrong", err });
@@ -260,7 +267,7 @@ export default class Shop {
         { isActive: true },
         { new: true }
       );
-      res.status(201).json({ success: true, msg: "Active shop complete.", shop });
+      res.status(200).json({ success: true, msg: "Active shop complete.", shop });
     } catch (err) {
       console.log(err);
       res.status(400).json({ msg: "Something went wrong", err });
@@ -340,7 +347,7 @@ export default class Shop {
         { new: true }
       );
 
-      res.status(201).json({ msg: "Update bank account success.", bank });
+      res.status(200).json({ msg: "Update bank account success.", bank });
     } catch (err) {
       console.log(err);
       res.status(400).json({ msg: "Something went wrong", err });
@@ -359,7 +366,7 @@ export default class Shop {
 
       const bank = await BankModel.findByIdAndDelete(bank_id);
 
-      res.status(201).json({ msg: "Delete bank account success.", bank });
+      res.status(200).json({ msg: "Delete bank account success.", bank });
     } catch (err) {
       res.status(400).json({ msg: "Something went wrong", err });
     }
