@@ -1,17 +1,21 @@
 import mongoose from "mongoose";
 import ServiceModel from "../models/service.model.js";
 import ShopModel from "../models/shop.model.js";
+import TagModel from "../models/tag.model.js";
 import UploadImage from "../utils/uploadImage.js";
 
 export default class Service {
   static async getServiceAll(req, res) {
     try {
       const service = await ServiceModel.find({})
-        .populate({
+        .populate([{
           path: "shop",
           select: "name phone address location openTime closeTime",
           model: "Shop",
-        })
+        },{
+          path: "tag",
+          select: 'name category image'
+        }])
         .sort({ _id: -1 });
       res.status(200).json({ service });
     } catch (err) {
@@ -25,7 +29,10 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceModel.find({ shop: _id }).sort({
+      const service = await ServiceModel.find({ shop: _id }).populate({
+        path: "tag",
+        select: 'name category image'
+      }).sort({
         _id: -1,
       });
 
@@ -44,11 +51,14 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceModel.findOne({ _id }).populate({
+      const service = await ServiceModel.findOne({ _id }).populate([{
         path: "shop",
         select: "name phone address location openTime closeTime",
         model: "Shop",
-      });
+      },{
+        path: "tag",
+        select: 'name category image'
+      }]);
       res.status(200).json({ service });
     } catch (err) {
       console.log(err);
@@ -58,17 +68,18 @@ export default class Service {
 
   static async postService(req, res) {
     try {
-      let { shop_id, name, category, price, description, imgUrl } = req.body;
+      // let { shop_id, name, category, price, description, imgUrl } = req.body;
+      let { shop_id, tag_id, price, description } = req.body;
 
-      if (!name) {
-        return res.status(400).json({ msg: "please input name." });
-      }
-      if (!category) {
-        return res.status(400).json({ msg: "please input category." });
-      }
-      if (!price) {
-        return res.status(400).json({ msg: "please input price." });
-      }
+      // if (!name) {
+      //   return res.status(400).json({ msg: "please input name." });
+      // }
+      // if (!category) {
+      //   return res.status(400).json({ msg: "please input category." });
+      // }
+      // if (!price) {
+      //   return res.status(400).json({ msg: "please input price." });
+      // }
 
       if (price <= 0) {
         return res.status(400).json({ msg: "price must be more then 0." });
@@ -77,17 +88,23 @@ export default class Service {
       if (!description) {
         return res.status(400).json({ msg: "please input description." });
       }
-      if (!imgUrl) {
-        return res.status(400).json({ msg: "please input imgUrl." });
-      }
+      // if (!imgUrl) {
+      //   return res.status(400).json({ msg: "please input imgUrl." });
+      // }
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+      if (!mongoose.isValidObjectId(tag_id))
+        return res.status(400).json({ msg: `Invalid id: ${tag_id}` });
 
       // if (imgFile) {
       //   var imgUrl = await UploadImage(imgFile);
       // }
 
-      const shop = await ShopModel.findOne({ _id: shop_id, category })
+      const tag = await TagModel.findById(tag_id);
+       if(!tag) return res.status(400).json({ msg: `Not found this tag.` });
+        
+
+      const shop = await ShopModel.findOne({ _id: shop_id, tag: tag._id })
 
       if(!shop){
         return res.status(400).json({ msg: `category is not match with your shop's category.` });
@@ -95,9 +112,7 @@ export default class Service {
 
       const data = {
         shop: shop_id,
-        image: imgUrl,
-        name,
-        category,
+        tag: tag_id,
         price,
         description,
       };

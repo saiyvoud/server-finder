@@ -23,12 +23,15 @@ export default class Review {
 
   static async addTag(req, res) {
     try {
-      const { name, category, imgFile } = req.body;
+      const { name, category, tag_type, imgFile } = req.body;
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
       }
       if (!category) {
         return res.status(400).json({ msg: "please input category." });
+      }
+      if (!tag_type) {
+        return res.status(400).json({ msg: "please input tag_type." });
       }
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
@@ -36,7 +39,7 @@ export default class Review {
 
       const imgUrl = await UploadImage(imgFile);
 
-      const tag = await TagModel.create({ name, category, image: imgUrl });
+      const tag = await TagModel.create({ name, category, tag_type, image: imgUrl });
 
       res.status(201).json({ msg: "Create new tag.", tag });
     } catch (err) {
@@ -47,13 +50,16 @@ export default class Review {
 
   static async updateTag(req, res) {
     try {
-      const { tag_id, name, imgFile, oldImg } = req.body;
+      const { tag_id, name, tag_type, imgFile, oldImg } = req.body;
 
       if (!tag_id) {
         return res.status(400).json({ msg: "tag_id can not be null" });
       }
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
+      }
+      if (!tag_type) {
+        return res.status(400).json({ msg: "please input tag_type." });
       }
       if (!imgFile) {
         return res.status(400).json({ msg: "please input imgFile." });
@@ -68,7 +74,7 @@ export default class Review {
 
       const tag = await TagModel.findByIdAndUpdate(
         tag_id ,
-        { name, image: imgUrl },
+        { name, tag_type, image: imgUrl },
         { new: true }
       );
       res.status(201).json({ msg: "Update tag complete", tag });

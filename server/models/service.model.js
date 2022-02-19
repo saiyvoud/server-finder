@@ -6,25 +6,25 @@ const serviceSchema = mongoose.Schema({
     ref: "Shop",
     required: true,
   },
-  image: {
-    type:String,
-    default:''
-  },
-  name: {
-    type: String,
+  tag: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tag",
     required: true,
-    maxlength: 255,
   },
-  category:{
-    type:String,
-    enum:['ລົດຈັກ', 'ລົດໃຫຍ່', 'car', 'motorcycle', 'motorbike'],
-    maxlength:20
-  },
-  service_type:{
-    type:String,
-    enum:['ພາຍໃນ', 'ພາຍນອກ', 'inside', 'outside'],
-    maxlength:20
-  },
+  // image: {
+  //   type:String,
+  //   default:''
+  // },
+  // name: {
+  //   type: String,
+  //   required: true,
+  //   maxlength: 255,
+  // },
+  // category:{
+  //   type:String,
+  //   enum:['ລົດຈັກ', 'ລົດໃຫຍ່', 'car', 'motorcycle', 'motorbike'],
+  //   maxlength:20
+  // },
   price: {
     type: Number,
     required: true,
