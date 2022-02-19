@@ -13,7 +13,7 @@ export default class Shop {
         .populate([
           { path: "user", select: "firstname lastname phone" },
           { path: "bankAccount" },
-        ]);
+        ]).skip(3).limit(2);
       res.status(200).json({ msg: "Success", shop });
     } catch (err) {
       res.status(500).json({ msg: "Something went wrong", err });

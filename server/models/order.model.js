@@ -112,7 +112,7 @@ const orderDetailSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      enum:['order','paid', 'cancel'],
+      enum:['order', 'goging','paid', 'cancel'],
       default: "order",
       maxlength: 20,
     },

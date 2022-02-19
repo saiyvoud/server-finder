@@ -38,6 +38,7 @@ export default class Notification {
   static async NotifUser(req, res) {
     try {
       const notification = await NotifModel.find({
+        user: req.user._id,
         for: { $in: ["user", "all"] },
       }).sort({
         _id: -1,
