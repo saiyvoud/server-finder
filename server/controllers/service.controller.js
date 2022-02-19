@@ -104,6 +104,13 @@ export default class Service {
         return res.status(400).json({ msg: `category is not match with your shop's category.` });
       }
 
+      const chkService = await ServiceModel.findOne({shop: shop_id,
+        tag: tag_id})
+
+      if(chkService){
+        return res.status(400).json({ msg: `this service is already exist.` });
+      }
+      
       const data = {
         shop: shop_id,
         tag: tag_id,
