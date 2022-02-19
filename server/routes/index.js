@@ -37,14 +37,14 @@ route.put("/user/edit-password", auth, UserController.editPassword);
 route.put("/user/forgot-password", UserController.forgotPassword);
 
 //Upload Image
-route.post("/user/upload-image", auth, ImageController.uploadUserImage);
-route.post("/shop/upload-image", auth, shopkeeper,  ImageController.uploadShopImage);
-route.post(
+route.put("/user/upload-image", auth, ImageController.uploadUserImage);
+route.put("/shop/upload-image", auth, shopkeeper,  ImageController.uploadShopImage);
+route.put(
   "/shop/upload-cover-image",
   auth,
   ImageController.uploadShopCoverImage
 );
-route.post("/service/upload-image", shopkeeper, auth, ImageController.uploadServiceImage);
+route.put("/service/upload-image", shopkeeper, auth, ImageController.uploadServiceImage);
 
 // ================== Shop ============================
 route.get("/shops", ShopController.AllShop);
