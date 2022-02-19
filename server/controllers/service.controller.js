@@ -14,7 +14,7 @@ export default class Service {
           model: "Shop",
         },{
           path: "tag",
-          select: 'name category image'
+          select: 'name category tag_type image'
         }])
         .sort({ _id: -1 });
       res.status(200).json({ service });
@@ -31,12 +31,12 @@ export default class Service {
 
       const service = await ServiceModel.find({ shop: _id }).populate({
         path: "tag",
-        select: 'name category image'
+        select: 'name category tag_type image'
       }).sort({
         _id: -1,
       });
 
-      service.length>0? res.status(200).json({ msg:`your shop's services.`, service }): res.status(200).json({msg:'you do not have any service.'})
+      service.length>0? res.status(200).json({ msg:`all your shop's services.`, service }): res.status(200).json({msg:'you do not have any service.'})
 
       
     } catch (err) {
@@ -57,7 +57,7 @@ export default class Service {
         model: "Shop",
       },{
         path: "tag",
-        select: 'name category image'
+        select: 'name category tag_type image'
       }]);
       res.status(200).json({ service });
     } catch (err) {
@@ -88,17 +88,11 @@ export default class Service {
       if (!description) {
         return res.status(400).json({ msg: "please input description." });
       }
-      // if (!imgUrl) {
-      //   return res.status(400).json({ msg: "please input imgUrl." });
-      // }
+      
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
       if (!mongoose.isValidObjectId(tag_id))
         return res.status(400).json({ msg: `Invalid id: ${tag_id}` });
-
-      // if (imgFile) {
-      //   var imgUrl = await UploadImage(imgFile);
-      // }
 
       const tag = await TagModel.findById(tag_id);
        if(!tag) return res.status(400).json({ msg: `Not found this tag.` });
@@ -126,15 +120,9 @@ export default class Service {
 
   static async updateService(req, res) {
     try {
-      let { service_id, name, category, price, description, imgFile } =
+      let { service_id, price, description } =
         req.body;
 
-      if (!name) {
-        return res.status(400).json({ msg: "please input name." });
-      }
-      if (!category) {
-        return res.status(400).json({ msg: "please input category." });
-      }
       if (!price) {
         return res.status(400).json({ msg: "please input price." });
       }
@@ -145,17 +133,14 @@ export default class Service {
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });
 
-      // if (imgFile) {
-      //   var imgUrl = await UploadImage(imgFile);
-      // }
-
-      const data = { name, category, price, description };
+      const data = { price, description };
 
       const service = await ServiceModel.findByIdAndUpdate(
         { _id: service_id },
         { $set: data },
         { new: true }
       );
+      if(!service) return res.status(400).json({ msg: `Invalid id: ${service_id}` });
       res.status(200).json({ msg: "Update complete.", service })
     } catch (err) {
       res.status(404).json({ msg: "Something Wrong.", err });
