@@ -326,7 +326,11 @@ export default class Model {
       }).populate([
         {
           path: "service",
-          select: "name category price description",
+          select: "tag price description",
+          populate: {
+            path: 'tag',
+            select: 'name category tag_type image'
+          }
         },
       ]);
       res.status(200).json({ msg: "Order Detail", orderDetail });
