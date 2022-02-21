@@ -117,8 +117,8 @@ route.delete("/banner/:_id", auth, admin, BannerController.deleteBanner);
 
 // ==================== Order ====================
 route.get("/orders", auth, admin, OrderController.getOrderAll);
-route.get("/order/user", auth, OrderController.getOrderUser);
-route.get("/order/shop/:_id", auth, shopkeeper, OrderController.getOrderShop);
+route.get("/order/user/:status", auth, OrderController.getOrderUser);
+route.get("/order/shop/:shop_id/:status", auth, shopkeeper, OrderController.getOrderShop);
 route.post("/order", auth, OrderController.addOrder);
 route.delete("/order", auth, OrderController.cancelOrder);
 route.post("/order/confirm/:_id", auth, shopkeeper, OrderController.confirmOrder);

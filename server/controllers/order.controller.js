@@ -8,7 +8,8 @@ export default class Model {
   // ========= Order =============
   static async getOrderAll(req, res) {
     try {
-      const order = await OrderModel.find({}).populate([
+      const {status} = req.params
+      const order = await OrderModel.find({status}).populate([
         {
           path: "user",
           select: "firstname lastname phone",
@@ -31,14 +32,15 @@ export default class Model {
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
+  
   static async getOrderShop(req, res) {
     try {
-      const shop_id = req.params._id;
+      const {shop_id, status} = req.params;
 
       if (!shop_id)
         return res.status(404).json({ msg: "shop_id can not be null." });
 
-      const order = await OrderModel.find({ shop: shop_id }).populate([
+      const order = await OrderModel.find({ shop: shop_id, status }).populate([
         {
           path: "user",
           select: "firstname lastname phone",
@@ -64,8 +66,9 @@ export default class Model {
 
   static async getOrderUser(req, res) {
     try {
+      const { status} = req.params;
       const user_id = req.user._id;
-      const order = await OrderModel.find({ user: user_id }).populate([
+      const order = await OrderModel.find({ user: user_id, status }).populate([
         {
           path: "shop",
           select: "name phone address",
