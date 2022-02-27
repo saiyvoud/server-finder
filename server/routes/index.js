@@ -16,6 +16,7 @@ import OrderController from "../controllers/order.controller.js";
 import PaymentController from "../controllers/payment.controller.js";
 import NotifController from "../controllers/notification.controller.js";
 import TagController from "../controllers/tag.controller.js";
+import UpdateController from "../controllers/update.controller.js";
 
 // ================ import middleware ================
 import { auth } from "../middlewares/auth.js";
@@ -25,26 +26,36 @@ import { shopkeeper } from "../middlewares/shopkeeper.js";
 const route = express.Router();
 
 // =================== User Routes ===================
-route.get("/users", auth,admin,  UserController.userAll);
+route.get("/users", auth, admin, UserController.userAll);
 route.get("/user-info", auth, UserController.userInfo);
-route.get("/user/:user_id",auth, admin, UserController.userOne);
+route.get("/user/:user_id", auth, admin, UserController.userOne);
 route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
 route.post("/user/logout", auth, UserController.logOut);
-route.put("/user/update", auth, admin,  UserController.updateUser);
-route.post("/upgrade-user/:_id", auth, admin,  UserController.upgradeUser);
+route.put("/user/update", auth, admin, UserController.updateUser);
+route.post("/upgrade-user/:_id", auth, admin, UserController.upgradeUser);
 route.put("/user/edit-password", auth, UserController.editPassword);
 route.put("/user/forgot-password", UserController.forgotPassword);
 
 //Upload Image
 route.put("/user/upload-image", auth, ImageController.uploadUserImage);
-route.put("/shop/upload-image", auth, shopkeeper,  ImageController.uploadShopImage);
+route.put(
+  "/shop/upload-image",
+  auth,
+  shopkeeper,
+  ImageController.uploadShopImage
+);
 route.put(
   "/shop/upload-cover-image",
   auth,
   ImageController.uploadShopCoverImage
 );
-route.put("/service/upload-image", shopkeeper, auth, ImageController.uploadServiceImage);
+route.put(
+  "/service/upload-image",
+  shopkeeper,
+  auth,
+  ImageController.uploadServiceImage
+);
 
 // ================== Shop ============================
 route.get("/shops", ShopController.AllShop);
@@ -52,6 +63,7 @@ route.get("/shop/owner", auth, shopkeeper, ShopController.OwnShop);
 route.post("/shop", auth, ShopController.createShop);
 route.put("/shop", auth, shopkeeper, ShopController.updateShop);
 route.delete("/shop/:shop_id", auth, shopkeeper, ShopController.deleteShop);
+route.get("/non-active-shop", auth, admin, ShopController.NonActiveShop);
 route.put("/active-shop/:shop_id", auth, admin, ShopController.activeShop);
 
 // ================== Bank account ==========================
@@ -118,10 +130,20 @@ route.delete("/banner/:_id", auth, admin, BannerController.deleteBanner);
 // ==================== Order ====================
 route.get("/orders", auth, admin, OrderController.getOrderAll);
 route.get("/order/user/:status", auth, OrderController.getOrderUser);
-route.get("/order/shop/:shop_id/:status", auth, shopkeeper, OrderController.getOrderShop);
+route.get(
+  "/order/shop/:shop_id/:status",
+  auth,
+  shopkeeper,
+  OrderController.getOrderShop
+);
 route.post("/order", auth, OrderController.addOrder);
 route.delete("/order", auth, OrderController.cancelOrder);
-route.post("/order/confirm/:_id", auth, shopkeeper, OrderController.confirmOrder);
+route.post(
+  "/order/confirm/:_id",
+  auth,
+  shopkeeper,
+  OrderController.confirmOrder
+);
 
 // =================== Order Detail =====================
 route.get("/order-detail/:_id", auth, OrderController.getOrderDetail);
@@ -170,7 +192,14 @@ route.get(
 
 route.get("/notification/user", auth, NotifController.NotifUser);
 route.post("/notification", auth, NotifController.postNotif);
+route.post("/notification/to-admin", auth, NotifController.postNotifToAddmin);
+route.post("/notification/to-shop", auth, NotifController.postNotifToShop);
 route.put("/notification", auth, NotifController.updateNotif);
 route.delete("/notification/:_id", auth, NotifController.removeNotif);
+
+route.get("/all-update-versions", auth, admin, UpdateController.AllUpdate);
+route.get("/last-update-version", auth, admin, UpdateController.LastUpdate);
+route.post("/update-version", auth, admin, UpdateController.NewUpdate);
+route.delete("/update-version/:update_id", auth, admin, UpdateController.RemoveUpdate);
 
 export default route;

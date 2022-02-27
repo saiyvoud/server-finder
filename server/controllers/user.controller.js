@@ -116,14 +116,18 @@ class UserController {
 
   static async logIn(req, res) {
     try {
-      const { phone, password } = req.body;
+      const { phone, password, mobile_token } = req.body;
       if (!phone) {
         return res.status(400).json({ msg: "please input phone." });
       }
       if (!password) {
         return res.status(400).json({ msg: "please input password." });
       }
-      let user = await User.findOne({ phone });
+      if (!mobile_token) {
+        return res.status(400).json({ msg: "please input mobile_token." });
+      }
+
+      let user = await User.findOneAndUpdate({ phone }, {mobile_token}, {new:true});
 
       if (!user)
         return res
@@ -187,6 +191,7 @@ class UserController {
       res.status(400).json({ msg: "Something Wrong.", err });
     }
   }
+
   static async forgotPassword(req, res) {
     try {
       const { newPassword, phone } = req.body;
@@ -229,7 +234,89 @@ class UserController {
     }
   }
 
-  
+  // static async signUpShop(req, res) {
+  //   let { firstname, lastname, password, phone, imgFile } = req.body;
+  //   if (!firstname) {
+  //     return res.status(400).json({ msg: "please input firstname." });
+  //   }
+  //   if (!lastname) {
+  //     return res.status(400).json({ msg: "please input lastname." });
+  //   }
+  //   // if (!username) {
+  //   //   return res.status(400).json({ msg: "please input username." });
+  //   // }
+  //   if (!password) {
+  //     return res.status(400).json({ msg: "please input password." });
+  //   }
+  //   if (!phone) {
+  //     return res.status(400).json({ msg: "please input phone ." });
+  //   }
+
+  //   // let phone = "+85620" + user_data.phone.substr(user_data.phone.length - 8, 8);
+  //   try {
+  //     const chkExist = await User.findOne({ phone });
+
+  //     if (chkExist) {
+  //       return res
+  //         .status(400)
+  //         .json({ msg: "this phone number is already exist." });
+  //     }
+
+  //     if (imgFile) {
+  //       var imgUrl = await UploadImage(imgFile);
+  //     }
+
+  //     const userNew = new User({
+  //       firstname,
+  //       lastname,
+  //       // username,
+  //       password,
+  //       phone,
+  //       image: imgUrl,
+  //       auth: "shopkeeper"
+  //     });
+
+  //     const user = await userNew.save();
+  //     res.status(201).json({ success: true, user });
+  //   } catch (err) {
+  //     console.log("err " + err);
+  //     res.status(500).json({ msg: "Something went wrong", err });
+  //   }
+  // }
+
+  // static async logInShop(req, res) {
+  //   try {
+  //     const { phone, password } = req.body;
+  //     if (!phone) {
+  //       return res.status(400).json({ msg: "please input phone." });
+  //     }
+  //     if (!password) {
+  //       return res.status(400).json({ msg: "please input password." });
+  //     }
+
+  //     let user = await User.findOne({ phone, auth: "skopkeeper" });
+
+  //     if (!user)
+  //       return res
+  //         .status(404)
+  //         .json({ msg: "Invalid username, phone or password" });
+
+  //     user.comparePassword(password, (err, isMatch) => {
+  //       if (!isMatch)
+  //         return res
+  //           .status(404)
+  //           .json({ msg: "Invalid username, phone or password" });
+  //       user.generateToken((err, user) => {
+  //         if (err) return res.status(404).json({ err });
+
+  //         // res.cookie("g_auth", user.token).json({ msg: "Login Complete", token: user.token });
+  //         res.status(200).json({ msg: "Login Complete", token: user.token });
+  //       });
+  //     });
+  //   } catch (err) {
+  //     res.status(400).json({ msg: "Something Wrong." });
+  //   }
+  // }
 }
 
 export default UserController;

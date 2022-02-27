@@ -8,14 +8,17 @@ export default class Service {
   static async getServiceAll(req, res) {
     try {
       const service = await ServiceModel.find({})
-        .populate([{
-          path: "shop",
-          select: "name phone address location openTime closeTime",
-          model: "Shop",
-        },{
-          path: "tag",
-          select: 'name category tag_type image'
-        }])
+        .populate([
+          {
+            path: "shop",
+            select: "name phone address location openTime closeTime",
+            model: "Shop",
+          },
+          {
+            path: "tag",
+            select: "name category tag_type image",
+          },
+        ])
         .sort({ _id: -1 });
       res.status(200).json({ service });
     } catch (err) {
@@ -29,16 +32,18 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceModel.find({ shop: _id }).populate({
-        path: "tag",
-        select: 'name category tag_type image'
-      }).sort({
-        _id: -1,
-      });
+      const service = await ServiceModel.find({ shop: _id })
+        .populate({
+          path: "tag",
+          select: "name category tag_type image",
+        })
+        .sort({
+          _id: -1,
+        });
 
-      service.length>0? res.status(200).json({ msg:`all your shop's services.`, service }): res.status(200).json({msg:'you do not have any service.'})
-
-      
+      service.length > 0
+        ? res.status(200).json({ msg: `all your shop's services.`, service })
+        : res.status(200).json({ msg: "you do not have any service." });
     } catch (err) {
       console.log(err);
       res.status(404).json({ msg: "Something Wrong.", err });
@@ -51,14 +56,17 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceModel.findOne({ _id }).populate([{
-        path: "shop",
-        select: "name phone address location openTime closeTime",
-        model: "Shop",
-      },{
-        path: "tag",
-        select: 'name category tag_type image'
-      }]);
+      const service = await ServiceModel.findOne({ _id }).populate([
+        {
+          path: "shop",
+          select: "name phone address location openTime closeTime",
+          model: "Shop",
+        },
+        {
+          path: "tag",
+          select: "name category tag_type image",
+        },
+      ]);
       res.status(200).json({ service });
     } catch (err) {
       console.log(err);
@@ -85,32 +93,38 @@ export default class Service {
         return res.status(400).json({ msg: "price must be more then 0." });
       }
 
-      if (!description) {
-        return res.status(400).json({ msg: "please input description." });
-      }
-      
+      // if (!description) {
+      //   return res.status(400).json({ msg: "please input description." });
+      // }
+
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
       if (!mongoose.isValidObjectId(tag_id))
         return res.status(400).json({ msg: `Invalid id: ${tag_id}` });
 
       const tag = await TagModel.findById(tag_id);
-       if(!tag) return res.status(400).json({ msg: `Not found this tag.` });
-        
+      if (!tag) return res.status(400).json({ msg: `Not found this tag.` });
 
-      const shop = await ShopModel.findOne({ _id: shop_id, tag: tag._id })
-
-      if(!shop){
-        return res.status(400).json({ msg: `category is not match with your shop's category.` });
+      const shop = await ShopModel.findOne({
+        _id: shop_id,
+        category: tag.category,
+      });
+      
+      if (!shop) {
+        return res
+          .status(400)
+          .json({ msg: `category is not match with your shop's category.` });
       }
 
-      const chkService = await ServiceModel.findOne({shop: shop_id,
-        tag: tag_id})
+      const chkService = await ServiceModel.findOne({
+        shop: shop_id,
+        tag: tag_id,
+      });
 
-      if(chkService){
+      if (chkService) {
         return res.status(400).json({ msg: `this service is already exist.` });
       }
-      
+
       const data = {
         shop: shop_id,
         tag: tag_id,
@@ -127,8 +141,7 @@ export default class Service {
 
   static async updateService(req, res) {
     try {
-      let { service_id, price, description } =
-        req.body;
+      let { service_id, price, description } = req.body;
 
       if (!price) {
         return res.status(400).json({ msg: "please input price." });
@@ -147,8 +160,9 @@ export default class Service {
         { $set: data },
         { new: true }
       );
-      if(!service) return res.status(400).json({ msg: `Invalid id: ${service_id}` });
-      res.status(200).json({ msg: "Update complete.", service })
+      if (!service)
+        return res.status(400).json({ msg: `Invalid id: ${service_id}` });
+      res.status(200).json({ msg: "Update complete.", service });
     } catch (err) {
       res.status(404).json({ msg: "Something Wrong.", err });
     }

@@ -213,9 +213,9 @@ if(!shop_id){
         })
         .sort({ _id: -1 });
 
-      const inv = invoice.filter((val)=> val.order == null);
+      const inv = invoice.filter((val)=> val.order != null);
 
-      res.status(200).json({ msg: "Get Shop Invoice.", invoice });
+      res.status(200).json({ msg: "Get Shop Invoice.", invoice:inv });
     } catch (err) {
       console.log(err);
       res.status(404).json({ msg: "Something wrong", err });

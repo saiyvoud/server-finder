@@ -7,6 +7,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import './config/db.js'
+// import "./config/firebase-admin"
+
 
 import API from './routes/index.js'
 

@@ -4,6 +4,7 @@ import ShopModel from "../models/shop.model.js";
 import BankModel from "../models/bankAccount.model.js";
 import UploadImage from "../utils/uploadImage.js";
 import { User } from "../models/user.model.js";
+import Notification from "./notification.controller.js";
 
 export default class Shop {
   static async AllShop(req, res) {
@@ -13,8 +14,23 @@ export default class Shop {
         .populate([
           { path: "user", select: "firstname lastname phone" },
           { path: "bankAccount" },
-        ]).skip(3).limit(2);
+        ])
+        // .skip(3).limit(2);
       res.status(200).json({ msg: "Success", shop });
+    } catch (err) {
+      res.status(500).json({ msg: "Something went wrong", err });
+    }
+  }
+
+  static async NonActiveShop(req, res) {
+    try {
+      const shop = await ShopModel.find({isActive: false})
+        .sort({ _id: -1 })
+        .populate([
+          { path: "user", select: "firstname lastname phone" },
+          { path: "bankAccount" },
+        ]);
+      res.status(200).json({ msg: "Get All Non Acitve Shop Success", shop });
     } catch (err) {
       res.status(500).json({ msg: "Something went wrong", err });
     }

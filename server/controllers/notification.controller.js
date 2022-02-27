@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import NotifModel from "../models/notification.model.js";
 import UploadImage from "../utils/uploadImage.js";
+
+import firebaseAdmin from "../config/firebase-admin.js";
+import { User } from "../models/user.model.js";
+
 export default class Notification {
   static async NotifAll(req, res) {
     try {
@@ -25,7 +29,8 @@ export default class Notification {
     try {
       const shop_id = req.params._id;
       const notification = await NotifModel.find({
-        $or: [{ shop: shop_id, for: { $in: ["shop", "all"] } }],
+        $or: [{ shop: shop_id}, {for:'all' }],
+        for: { $in: ["shop", "all"] },
       }).sort({
         _id: -1,
       });
@@ -38,7 +43,7 @@ export default class Notification {
   static async NotifUser(req, res) {
     try {
       const notification = await NotifModel.find({
-        user: req.user._id,
+        $or: [{ user: req.user._id }, { for: "all" }],
         for: { $in: ["user", "all"] },
       }).sort({
         _id: -1,
@@ -70,36 +75,139 @@ export default class Notification {
 
       data = { ...data, image: imgUrl };
 
-      const notification = await NotifModel.create(data);
+      // const notification = await NotifModel.create(data);
 
-      res.status(201).json({ msg: "Post New Notification", notification });
+      // res.status(201).json({ msg: "Post New Notification", notification });
+
+      const token1 =
+        "eGh6sibFQ_irHx9-lAeBZl:APA91bEQM2SrzTDn__jXJsIGh-yJJXkidsO4x8AKpzUs235rokDOZVnJ2FBIHHmFWWe72JpK6YoWQ8t1HUkDLRZFAILvX0_zNA_vUMOnjX2V_dBL9iF83ECE8ByitibwRFGQySjQ7YVD";
+      const token2 =
+        "fQI53ePXRUWgsUGhnCcsCX:APA91bGndEgMN3VmWpJLcZYVETsnb2yv-NxQi7Ue1UxJvTS6EIZVOij3HOQaYEhV_ittteuIb7Miy2MU9mdStdZaQ_hfMvzGVHu7-cJQjzM4xf4_cbbMuJdqvk4WCCo4hOGuXw5WVhjW";
+      // const msgSend = await firebaseAdmin.messaging().sendToDevice(
+      //   [token1, token2],{
+
+      //     notification: {
+      //       title: "Test Message 6",
+      //       body: "test finder message 6.",
+      //       imageUrl:
+      //         "http://res.cloudinary.com/dz2uzdfdy/image/upload/v1645248143/1645248141486.jpg",
+      //     },
+      //   },
+      //   {
+      //     // Required for background/quit data-only messages on iOS
+      //     contentAvailable: true,
+      //     // Required for background/quit data-only messages on Android
+      //     priority: "high",
+      //   }
+      // );
+      const t = "";
+      const msgSend = await firebaseAdmin.messaging().sendMulticast({
+        tokens: [token2, t],
+        notification: {
+          title: "Test Message",
+          body: "test finder message.",
+          imageUrl:
+            "http://res.cloudinary.com/dz2uzdfdy/image/upload/v1645248143/1645248141486.jpg",
+        },
+      });
+
+      res
+        .status(201)
+        .json({ msg: "Post New Notification", notification: "", msgSend });
     } catch (err) {
+      console.log(err);
       res.status(404).json({ msg: "Something wrong", err });
     }
   }
 
-  static async postNotifToShop(shop_id, user_id, title, body) {
+  static async postNotifToShop(req, res) {
     try {
-      // const title = 'new order'
-      // const body = 'new order is waiting. please check...'
-      
-      const data = {shop:shop_id, user: user_id, title, body, for:'shop'}
+      const { shop_user_id, title, body, imgUrl } = req.body;
+
+      if (!title) {
+        return res.status(400).json({ msg: "please input title" });
+      }
+      if (!body) {
+        return res.status(400).json({ msg: "please input body" });
+      }
+
+      if (!mongoose.isValidObjectId(shop_user_id) || shop_user_id == "")
+        return res.status(400).json({ msg: `Invalid id: ${shop_user_id}` });
+
+      const data = { title, body, for: "shop" };
       const notif = await NotifModel.create(data);
-      console.log('notif ',notif);
-      return true
+      console.log("notif ", notif);
+
+      let user = await User.findById(shop_user_id);
+      console.log('user', user);
+      const mobile_token = user.mobile_token
+      const msgSend = await firebaseAdmin.messaging().sendMulticast({
+        tokens: [mobile_token],
+        notification: {
+          title: title,
+          body: body,
+          imageUrl: imgUrl,
+        },
+      });
+      res.status(200).json({
+        success: true,
+        msg: "sent notification to shop success.",
+        notification: notif,
+        msgSend,
+      });
     } catch (err) {
-      return false
+      console.log(err);
+      return res.status(400).json({ msg: "Something wrong.", err });
     }
   }
-  
-  static async postNotifToUser(user_id, shop_id, title, body) {
-    try {      
-      const data = {shop:shop_id, user: user_id, title, body, for:'user'}
+
+  static async postNotifToAddmin(req, res) {
+    try {
+      const { title, body, imgUrl } = req.body;
+
+      if (!title) {
+        return res.status(400).json({ msg: "please input title" });
+      }
+      if (!body) {
+        return res.status(400).json({ msg: "please input body" });
+      }
+
+      const data = { shop: req.user._id, title, body, for: "admin" };
       const notif = await NotifModel.create(data);
-      console.log('notif ',notif);
-      return true
+      console.log("notif ", notif);
+
+      let mobile_token = await User.find({ auth: "admin" });
+      mobile_token = await mobile_token.map((val) => val.mobile_token);
+      const msgSend = await firebaseAdmin.messaging().sendMulticast({
+        tokens: mobile_token,
+        notification: {
+          title: title,
+          body: body,
+          imageUrl: imgUrl,
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        msg: "sent notification to admin success.",
+        notification: notif,
+        msgSend,
+      });
     } catch (err) {
-      return false
+      console.log(err);
+      return res.status(400).json({ msg: "Something wrong.", err });
+    }
+  }
+
+  static async postNotifToUser(user_id, shop_id, title, body) {
+    try {
+      const data = { shop: shop_id, user: user_id, title, body, for: "user" };
+      const notif = await NotifModel.create(data);
+
+      console.log("notif ", notif);
+      return true;
+    } catch (err) {
+      return false;
     }
   }
 

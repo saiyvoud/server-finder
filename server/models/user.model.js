@@ -43,20 +43,13 @@ const userSchema = mongoose.Schema({
         type: String,
         default: ''
     },
-    fbId:{
-        type: String
-    },
-    fbToken: {
-        type: String
-    },
-    googleId:{
-        type: String
-    },
-    googleToken: {
-        type: String
+    mobile_token: {
+        type:String,
+        default: ''
     },
     isDelete: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true})
 

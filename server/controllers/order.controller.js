@@ -223,13 +223,13 @@ export default class Model {
       const title = "new order";
       const body = "new order is waiting. please check...";
 
-      const chk = await NotifController.postNotifToShop(
-        shop_id,
-        user_id,
-        title,
-        body
-      );
-      console.log("check Notif", chk);
+      // const chk = await NotifController.postNotifToShop(
+      //   shop_id,
+      //   user_id,
+      //   title,
+      //   body
+      // );
+      // console.log("check Notif", chk);
 
       res.status(200).json({ msg: "Add order success.", order, orderDetail });
     } catch (err) {
@@ -267,8 +267,8 @@ export default class Model {
       const title = 'order has confirm'
       const body = 'your order has confirm. shop is goging please wait.'
 
-      const chk = await NotifController.postNotifToUser(order.user_id, order.shop_id, title, body)
-      console.log('chk ', chk);
+      // const chk = await NotifController.postNotifToUser(order.user_id, order.shop_id, title, body)
+      // console.log('chk ', chk);
 
       res.status(200).json({ msg: "Confirm Order Complete.", order });
     } catch (err) {

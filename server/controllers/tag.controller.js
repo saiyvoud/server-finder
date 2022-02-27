@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import TagModel from "../models/tag.model.js";
 import UploadImage from "../utils/uploadImage.js";
-export default class Review {
+export default class Tag {
   static async getAllTag(req, res) {
     try {
       const tag = await TagModel.find({ isDelete: false });
