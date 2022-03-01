@@ -4,6 +4,7 @@ import UploadImage from "../utils/uploadImage.js";
 
 import firebaseAdmin from "../config/firebase-admin.js";
 import { User } from "../models/user.model.js";
+import Shop from "../models/shop.model.js";
 
 export default class Notification {
   static async NotifAll(req, res) {
@@ -29,7 +30,7 @@ export default class Notification {
     try {
       const shop_id = req.params._id;
       const notification = await NotifModel.find({
-        $or: [{ shop: shop_id}, {for:'all' }],
+        $or: [{ shop: shop_id }, { for: "all" }],
         for: { $in: ["shop", "all"] },
       }).sort({
         _id: -1,
@@ -122,6 +123,8 @@ export default class Notification {
 
   static async postNotifToShop(req, res) {
     try {
+      const user_id = req.user.auth === "admin" ? undefined : req.user._id;
+
       const { shop_user_id, title, body, imgUrl } = req.body;
 
       if (!title) {
@@ -134,13 +137,22 @@ export default class Notification {
       if (!mongoose.isValidObjectId(shop_user_id) || shop_user_id == "")
         return res.status(400).json({ msg: `Invalid id: ${shop_user_id}` });
 
-      const data = { title, body, for: "shop" };
+      const shop = await Shop.findOne({ user: shop_user_id });
+
+      const data = {
+        shop: shop._id,
+        user: user_id,
+        title,
+        body,
+        image: imgUrl,
+        for: "shop",
+      };
       const notif = await NotifModel.create(data);
       console.log("notif ", notif);
 
       let user = await User.findById(shop_user_id);
-      console.log('user', user);
-      const mobile_token = user.mobile_token
+      console.log("mobile token", user);
+      const mobile_token = user.mobile_token;
       const msgSend = await firebaseAdmin.messaging().sendMulticast({
         tokens: [mobile_token],
         notification: {
@@ -163,7 +175,9 @@ export default class Notification {
 
   static async postNotifToAddmin(req, res) {
     try {
-      const { title, body, imgUrl } = req.body;
+      const user_id = req.user.auth === "genernal" ? req.user._id : undefined;
+
+      const { shop_id, title, body, imgUrl } = req.body;
 
       if (!title) {
         return res.status(400).json({ msg: "please input title" });
@@ -172,7 +186,14 @@ export default class Notification {
         return res.status(400).json({ msg: "please input body" });
       }
 
-      const data = { shop: req.user._id, title, body, for: "admin" };
+      const data = {
+        shop: shop_id,
+        user: user_id,
+        title,
+        body,
+        image: imgUrl,
+        for: "admin",
+      };
       const notif = await NotifModel.create(data);
       console.log("notif ", notif);
 
@@ -199,15 +220,48 @@ export default class Notification {
     }
   }
 
-  static async postNotifToUser(user_id, shop_id, title, body) {
+  static async postNotifToUser(req, res) {
     try {
-      const data = { shop: shop_id, user: user_id, title, body, for: "user" };
-      const notif = await NotifModel.create(data);
+      const { user_id, shop_id, title, body, imgUrl } = req.body;
 
+      if (!title) {
+        return res.status(400).json({ msg: "please input title" });
+      }
+      if (!body) {
+        return res.status(400).json({ msg: "please input body" });
+      }
+
+      const data = {
+        user: user_id,
+        shop: shop_id,
+        title,
+        body,
+        image: imgUrl,
+        for: "user",
+      };
+      const notif = await NotifModel.create(data);
       console.log("notif ", notif);
-      return true;
+
+      let user = await User.findById(user_id);
+      console.log("mobile token ", user.mobile_token);
+      const msgSend = await firebaseAdmin.messaging().sendMulticast({
+        tokens: [user.mobile_token],
+        notification: {
+          title: title,
+          body: body,
+          imageUrl: imgUrl,
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        msg: "sent notification to user success.",
+        notification: notif,
+        msgSend,
+      });
     } catch (err) {
-      return false;
+      console.log(err);
+      return res.status(400).json({ msg: "Something wrong.", err });
     }
   }
 

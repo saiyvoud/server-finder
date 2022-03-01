@@ -32,7 +32,7 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceModel.find({ shop: _id })
+      const service = await ServiceModel.find({ shop: _id, isDelete:false })
         .populate({
           path: "tag",
           select: "name category tag_type image",

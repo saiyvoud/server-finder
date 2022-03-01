@@ -24,7 +24,7 @@ export default class Model {
         },
         {
           path: "address",
-          select: "village district provice lat lng",
+          select: "village district province lat lng",
         },
       ]);
       res.status(200).json({ msg: "All Order", order });

@@ -128,7 +128,7 @@ route.put("/banner", auth, admin, BannerController.updateBanner);
 route.delete("/banner/:_id", auth, admin, BannerController.deleteBanner);
 
 // ==================== Order ====================
-route.get("/orders", auth, admin, OrderController.getOrderAll);
+route.get("/orders/:status", auth, admin, OrderController.getOrderAll);
 route.get("/order/user/:status", auth, OrderController.getOrderUser);
 route.get(
   "/order/shop/:shop_id/:status",
@@ -194,6 +194,7 @@ route.get("/notification/user", auth, NotifController.NotifUser);
 route.post("/notification", auth, NotifController.postNotif);
 route.post("/notification/to-admin", auth, NotifController.postNotifToAddmin);
 route.post("/notification/to-shop", auth, NotifController.postNotifToShop);
+route.post("/notification/to-user", auth, NotifController.postNotifToUser);
 route.put("/notification", auth, NotifController.updateNotif);
 route.delete("/notification/:_id", auth, NotifController.removeNotif);
 
