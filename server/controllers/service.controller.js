@@ -125,12 +125,12 @@ export default class Service {
       if (chkService) {
         return res.status(400).json({ msg: `this service is already exist.` });
       }
-      
-      await ServiceModel.findOneAndDelete({
-        shop: shop_id,
-        tag: tag_id,
-        isDelete: true
-      });
+
+      // await ServiceModel.findOneAndDelete({
+      //   shop: shop_id,
+      //   tag: tag_id,
+      //   isDelete: true
+      // });
 
       const data = {
         shop: shop_id,
@@ -153,10 +153,9 @@ export default class Service {
       if (!price) {
         return res.status(400).json({ msg: "please input price." });
       }
-      if (!description) {
-        return res.status(400).json({ msg: "please input description." });
+      if (price <= 0) {
+        return res.status(400).json({ msg: "price must be more then 0." });
       }
-
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });
 
