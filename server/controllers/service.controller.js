@@ -89,7 +89,7 @@ export default class Service {
       //   return res.status(400).json({ msg: "please input price." });
       // }
 
-      if (price <= 10000) {
+      if (price < 10000) {
         return res.status(400).json({ msg: "price must be more then 10000." });
       }
 
@@ -154,8 +154,8 @@ export default class Service {
       if (!price) {
         return res.status(400).json({ msg: "please input price." });
       }
-      if (price <= 10000) {
-        return res.status(400).json({ msg: "price must be more then 0." });
+      if (price < 10000) {
+        return res.status(400).json({ msg: "price must be more then 10000." });
       }
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });
