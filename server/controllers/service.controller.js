@@ -154,7 +154,7 @@ export default class Service {
       if (!price) {
         return res.status(400).json({ msg: "please input price." });
       }
-      if (price <= 0) {
+      if (price <= 10000) {
         return res.status(400).json({ msg: "price must be more then 0." });
       }
       if (!mongoose.isValidObjectId(service_id))
