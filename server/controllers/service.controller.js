@@ -89,9 +89,10 @@ export default class Service {
       //   return res.status(400).json({ msg: "please input price." });
       // }
 
-      if (price <= 0) {
-        return res.status(400).json({ msg: "price must be more then 0." });
+      if (price <= 10000) {
+        return res.status(400).json({ msg: "price must be more then 10000." });
       }
+
 
       // if (!description) {
       //   return res.status(400).json({ msg: "please input description." });

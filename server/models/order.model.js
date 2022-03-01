@@ -24,7 +24,7 @@ const orderSchema = mongoose.Schema(
     totalCost: {
       type: Number,
       required: true,
-      min: 1000
+      min: 10000
     },
     description: {
       type: String,
