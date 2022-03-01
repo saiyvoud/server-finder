@@ -119,11 +119,18 @@ export default class Service {
       const chkService = await ServiceModel.findOne({
         shop: shop_id,
         tag: tag_id,
+        isDelete: false
       });
 
       if (chkService) {
         return res.status(400).json({ msg: `this service is already exist.` });
       }
+      
+      await ServiceModel.findOneAndDelete({
+        shop: shop_id,
+        tag: tag_id,
+        isDelete: true
+      });
 
       const data = {
         shop: shop_id,
