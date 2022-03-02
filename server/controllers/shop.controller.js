@@ -48,7 +48,7 @@ export default class Shop {
       );
 
       if(shop && !shop.isActive){
-        return res.status(400).json({ msg: `Your shop is waiting for active.` });
+        return res.status(400).json({ msg: `Your shop is waiting for active.`, shop: {_id: shop._id, isActive: false} });
       }
 
       res.status(200).json({ msg: "Success", shop });
