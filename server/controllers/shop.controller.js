@@ -46,6 +46,11 @@ export default class Shop {
       const shop = await ShopModel.findOne({ user: user_id }).populate(
         "bankAccount"
       );
+
+      if(shop && !shop.isActive){
+        return res.status(400).json({ msg: `Your shop is waiting for active.` });
+      }
+
       res.status(200).json({ msg: "Success", shop });
     } catch (err) {
       res.status(500).json({ msg: "Something went wrong", err });
