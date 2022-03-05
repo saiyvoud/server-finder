@@ -22,6 +22,9 @@ app.use(bodyParser.urlencoded({extended: false, limit: '500mb', parameterLimit: 
 app.use(cookieParser())
 
 app.use('/api', API)
+app.use('/api/test', (req, res)=>{
+    res.status(200).json({success: true, msg:"Connect to server success."})
+})
 
 app.listen(PORT, ()=>{
     console.log(`server is running on port ${PORT}`)
