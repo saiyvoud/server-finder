@@ -14,8 +14,8 @@ export default class Shop {
         .populate([
           { path: "user", select: "firstname lastname phone" },
           { path: "bankAccount" },
-        ])
-        // .skip(3).limit(2);
+        ]);
+      // .skip(3).limit(2);
       res.status(200).json({ msg: "Success", shop });
     } catch (err) {
       res.status(500).json({ msg: "Something went wrong", err });
@@ -24,7 +24,7 @@ export default class Shop {
 
   static async NonActiveShop(req, res) {
     try {
-      const shop = await ShopModel.find({isActive: false})
+      const shop = await ShopModel.find({ isActive: false })
         .sort({ _id: -1 })
         .populate([
           { path: "user", select: "firstname lastname phone" },
@@ -47,11 +47,14 @@ export default class Shop {
         "bankAccount"
       );
 
-      if(shop && !shop.isActive){
-        return res.status(400).json({ msg: `Your shop is waiting for active.`, shop: {_id: shop._id, isActive: false} });
+      if (shop && !shop.isActive) {
+        return res.status(400).json({
+          msg: `Your shop is waiting for active.`,
+          shop: { _id: shop._id, isActive: false },
+        });
       }
 
-      res.status(200).json({ msg: "Success", shop });
+      res.status(200).json({ msg: "Success", shop: shop });
     } catch (err) {
       res.status(500).json({ msg: "Something went wrong", err });
     }
@@ -129,21 +132,25 @@ export default class Shop {
       if (imgFile) {
         var imgUrl = await UploadImage(imgFile);
       }
-      
+
       if (coverImg) {
         var coverImgUrl = await UploadImage(coverImg);
       }
 
       if (bankName) {
         const chkBankExist = await BankModel.findOne({
-          accountId
+          accountId,
         });
         if (chkBankExist)
           return res
             .status(400)
             .json({ msg: "your bank account is already exist." });
 
-        var banks = await BankModel.create({bankName, accountId, accountName});
+        var banks = await BankModel.create({
+          bankName,
+          accountId,
+          accountName,
+        });
         var bank_id = banks._id;
       }
 
@@ -162,12 +169,12 @@ export default class Shop {
         closeTime,
         openDay,
         closeDay,
-        address:{
+        address: {
           village,
           district,
           province,
           lat,
-          lng
+          lng,
         },
         bankAccount: bank_id,
         image: imgUrl,
@@ -191,8 +198,20 @@ export default class Shop {
 
   static async updateShop(req, res) {
     try {
-      let { shop_id, name, phone, village, district, province, lat, lng, openTime, closeTime, closeDay, openDay } =
-        req.body;
+      let {
+        shop_id,
+        name,
+        phone,
+        village,
+        district,
+        province,
+        lat,
+        lng,
+        openTime,
+        closeTime,
+        closeDay,
+        openDay,
+      } = req.body;
 
       if (!name) {
         return res.status(400).json({ msg: "please input name" });
@@ -241,9 +260,13 @@ export default class Shop {
         closeTime,
         closeDay,
         openDay,
-        address:{
-          village, district, province, lat, lng
-        }
+        address: {
+          village,
+          district,
+          province,
+          lat,
+          lng,
+        },
       };
 
       const shop = await ShopModel.findOneAndUpdate(
@@ -284,11 +307,20 @@ export default class Shop {
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
 
       const shop = await ShopModel.findOneAndUpdate(
-        { _id: shop_id },
+        { _id: shop_id, isActive: false },
         { isActive: true },
         { new: true }
       );
-      res.status(200).json({ success: true, msg: "Active shop complete.", shop });
+
+      if (!shop) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "Not found shop.", shop });
+      }
+
+      res
+        .status(200)
+        .json({ success: true, msg: "Active shop complete.", shop });
     } catch (err) {
       console.log(err);
       res.status(400).json({ msg: "Something went wrong", err });

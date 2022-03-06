@@ -76,27 +76,14 @@ export default class Service {
 
   static async postService(req, res) {
     try {
-      // let { shop_id, name, category, price, description, imgUrl } = req.body;
       let { shop_id, tag_id, price, description } = req.body;
-
-      // if (!name) {
-      //   return res.status(400).json({ msg: "please input name." });
-      // }
-      // if (!category) {
-      //   return res.status(400).json({ msg: "please input category." });
-      // }
-      // if (!price) {
-      //   return res.status(400).json({ msg: "please input price." });
-      // }
 
       if (price < 10000) {
         return res.status(400).json({ msg: "price must be more then 10000." });
       }
-
-
-      // if (!description) {
-      //   return res.status(400).json({ msg: "please input description." });
-      // }
+      if (price%1000 != 0) {
+        return res.status(400).json({ msg: "invalid price." });
+      }
 
       if (!mongoose.isValidObjectId(shop_id))
         return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
@@ -156,6 +143,9 @@ export default class Service {
       }
       if (price < 10000) {
         return res.status(400).json({ msg: "price must be more then 10000." });
+      }
+      if (price%1000 != 0) {
+        return res.status(400).json({ msg: "invalid price." });
       }
       if (!mongoose.isValidObjectId(service_id))
         return res.status(400).json({ msg: `Invalid id: ${service_id}` });

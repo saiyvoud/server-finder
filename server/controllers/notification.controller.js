@@ -29,9 +29,20 @@ export default class Notification {
   static async NotifShop(req, res) {
     try {
       const shop_id = req.params._id;
+
+      if (!mongoose.isValidObjectId(shop_id))
+        return res.status(400).json({ msg: `Invalid id: ${shop_id}` });
+
+      const shop = await Shop.findById(shop_id);
+
+      if (!shop)
+        return res
+          .status(200)
+          .json({ msg: "Get Shop Notification", notification: [] });
       const notification = await NotifModel.find({
         $or: [{ shop: shop_id }, { for: "all" }],
         for: { $in: ["shop", "all"] },
+        createdAt: { $gt: shop.createdAt },
       }).sort({
         _id: -1,
       });
@@ -43,9 +54,16 @@ export default class Notification {
 
   static async NotifUser(req, res) {
     try {
+      const user = await User.findById(req.user._id);
+
+      if (!user)
+        return res
+          .status(200)
+          .json({ msg: "Get User Notification", notification: [] });
       const notification = await NotifModel.find({
         $or: [{ user: req.user._id }, { for: "all" }],
         for: { $in: ["user", "all"] },
+        createdAt: { $gt: user.createdAt },
       }).sort({
         _id: -1,
       });
