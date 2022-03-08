@@ -31,6 +31,8 @@ route.get("/user-info", auth, UserController.userInfo);
 route.get("/user/:user_id", auth, admin, UserController.userOne);
 route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
+route.post("/user/sign-up/general", UserController.registerUser);
+route.post("/user/login/general", UserController.logInUser);
 route.post("/user/logout", auth, UserController.logOut);
 route.put("/user/update", auth, admin, UserController.updateUser);
 route.post("/upgrade-user/:_id", auth, admin, UserController.upgradeUser);
