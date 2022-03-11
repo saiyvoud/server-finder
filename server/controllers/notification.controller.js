@@ -141,6 +141,7 @@ export default class Notification {
 
   static async postNotifToShop(req, res) {
     try {
+      console.log(req.user._id);
       const user_id = req.user.auth === "admin" ? undefined : req.user._id;
 
       const { shop_user_id, title, body, imgUrl } = req.body;
@@ -156,6 +157,7 @@ export default class Notification {
         return res.status(400).json({ msg: `Invalid id: ${shop_user_id}` });
 
       const shop = await Shop.findOne({ user: shop_user_id });
+      console.log("shop",shop);
 
       const data = {
         shop: shop._id,
@@ -171,14 +173,32 @@ export default class Notification {
       let user = await User.findById(shop_user_id);
       console.log("mobile token", user);
       const mobile_token = user.mobile_token;
-      const msgSend = await firebaseAdmin.messaging().sendMulticast({
-        tokens: [mobile_token],
-        notification: {
+console.log("token=>", mobile_token);
+      // const server_key =
+      //   "AAAA2VoTmUg:APA91bF3Ic2I4uK2a1gI5Hov5XVygtWboeXv0GN0wV5WkzNQGQKB6R4xQjgxrQovSCHEraSPY2gjgahVpy9Sn54r-YmigBXpWNPQeA12GuCcTYkHAGzVwc-SjoRlk0RarqtJDW1kc8GS";
+      // await firebaseAdmin.updateAppSettings({
+      //   firebase_config: {
+      //     server_key: server_key,
+      //     notification_template: `{"message":{"notification":{"title":"New messages","body":"You have {{ unread_count }} new message(s) from {{ sender.name }}"},"android":{"ttl":"86400s","notification":{"click_action":"OPEN_ACTIVITY_1"}}}}`,
+      //     data_template: `{"sender":"{{ sender.id }}","channel":{"type": "{{ channel.type }}","id":"{{ channel.id }}"},"message":"{{ message.id }}"}`,
+      //   },
+      // });
+
+      const msgSend = await firebaseAdmin.messaging().send({
+        token: mobile_token,
+        data: {          
           title: title,
-          body: body,
-          imageUrl: imgUrl,
+          body: body
         },
       });
+      // const msgSend = await firebaseAdmin.messaging().sendMulticast({
+      //   tokens: [mobile_token],
+      //   notification: {
+      //     title: title,
+      //     body: body,
+      //     imageUrl: imgUrl,
+      //   },
+      // });
       res.status(200).json({
         success: true,
         msg: "sent notification to shop success.",

@@ -66,7 +66,7 @@ export default class Model {
 
   static async getOrderUser(req, res) {
     try {
-      const { status} = req.params;
+      const { status } = req.params;
       const user_id = req.user._id;
       const order = await OrderModel.find({ user: user_id, status }).populate([
         {
