@@ -184,21 +184,21 @@ console.log("token=>", mobile_token);
       //   },
       // });
 
-      const msgSend = await firebaseAdmin.messaging().send({
-        token: mobile_token,
-        data: {          
-          title: title,
-          body: body
-        },
-      });
-      // const msgSend = await firebaseAdmin.messaging().sendMulticast({
-      //   tokens: [mobile_token],
-      //   notification: {
+      // const msgSend = await firebaseAdmin.messaging().send({
+      //   token: mobile_token,
+      //   data: {          
       //     title: title,
-      //     body: body,
-      //     imageUrl: imgUrl,
+      //     body: body
       //   },
       // });
+      const msgSend = await firebaseAdmin.messaging().sendMulticast({
+        tokens: [mobile_token],
+        notification: {
+          title: title,
+          body: body,
+          imageUrl: imgUrl,
+        },
+      });
       res.status(200).json({
         success: true,
         msg: "sent notification to shop success.",
