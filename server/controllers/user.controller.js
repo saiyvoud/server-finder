@@ -226,6 +226,42 @@ class UserController {
       res.status(400).json({ msg: "Something Wrong." });
     }
   }
+  static async logInAdmin(req, res) {
+    try {
+      const { phone, password, mobile_token } = req.body;
+      if (!phone) {
+        return res.status(400).json({ msg: "please input phone." });
+      }
+      if (!password) {
+        return res.status(400).json({ msg: "please input password." });
+      }
+      if (!mobile_token) {
+        return res.status(400).json({ msg: "please input mobile_token." });
+      }
+
+      let user = await User.findOneAndUpdate({ phone, auth: 'admin' }, {mobile_token}, {new:true});
+
+      if (!user)
+        return res
+          .status(404)
+          .json({ msg: "Invalid phone or password" });
+
+      user.comparePassword(password, (err, isMatch) => {
+        if (!isMatch)
+          return res
+            .status(404)
+            .json({ msg: "Invalid phone or password" });
+        user.generateToken((err, user) => {
+          if (err) return res.status(404).json({ err });
+
+          res.status(200).json({ msg: "Login Complete", token: user.token });
+        });
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ msg: "Something Wrong." });
+    }
+  }
 
   static async logOut(req, res) {
     try {

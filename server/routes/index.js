@@ -33,6 +33,7 @@ route.post("/user/sign-up", UserController.signUp);
 route.post("/user/login", UserController.logIn);
 route.post("/user/sign-up/general", UserController.registerUser);
 route.post("/user/login/general", UserController.logInUser);
+route.post("/user/login/admin", UserController.logInAdmin);
 route.post("/user/logout", auth, UserController.logOut);
 route.put("/user/update", auth, admin, UserController.updateUser);
 route.post("/upgrade-user/:_id", auth, admin, UserController.upgradeUser);
