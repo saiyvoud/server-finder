@@ -75,14 +75,14 @@ class UserController {
       if (imgFile) {
         var imgUrl = await UploadImage(imgFile);
       }
-      
+
       const userNew = new User({
         firstname,
         lastname,
         // username,
         password,
         phone,
-        image: imgUrl
+        image: imgUrl,
       });
 
       const user = await userNew.save();
@@ -122,11 +122,13 @@ class UserController {
         lastname,
         // username,
         password,
-        phone
+        phone,
       });
 
       const user = await userNew.save();
-      res.status(201).json({ success: true, msg: 'Register user complete.', user });
+      res
+        .status(201)
+        .json({ success: true, msg: "Register user complete.", user });
     } catch (err) {
       console.log("err " + err);
       res.status(500).json({ msg: "Something went wrong", err });
@@ -167,7 +169,11 @@ class UserController {
         return res.status(400).json({ msg: "please input mobile_token." });
       }
 
-      let user = await User.findOneAndUpdate({ phone }, {mobile_token}, {new:true});
+      let user = await User.findOneAndUpdate(
+        { phone },
+        { mobile_token },
+        { new: true }
+      );
 
       if (!user)
         return res
@@ -203,7 +209,11 @@ class UserController {
         return res.status(400).json({ msg: "please input mobile_token." });
       }
 
-      let user = await User.findOneAndUpdate({ phone, auth: 'general' }, {mobile_token}, {new:true});
+      let user = await User.findOneAndUpdate(
+        { phone, auth: "general" },
+        { mobile_token },
+        { new: true }
+      );
 
       if (!user)
         return res
@@ -239,18 +249,18 @@ class UserController {
         return res.status(400).json({ msg: "please input mobile_token." });
       }
 
-      let user = await User.findOneAndUpdate({ phone, auth: 'admin' }, {mobile_token}, {new:true});
+      let user = await User.findOneAndUpdate(
+        { phone, auth: "admin" },
+        { mobile_token },
+        { new: true }
+      );
 
       if (!user)
-        return res
-          .status(404)
-          .json({ msg: "Invalid phone or password" });
+        return res.status(404).json({ msg: "Invalid phone or password" });
 
       user.comparePassword(password, (err, isMatch) => {
         if (!isMatch)
-          return res
-            .status(404)
-            .json({ msg: "Invalid phone or password" });
+          return res.status(404).json({ msg: "Invalid phone or password" });
         user.generateToken((err, user) => {
           if (err) return res.status(404).json({ err });
 
@@ -281,6 +291,7 @@ class UserController {
       if (!oldPassword) {
         return res.status(400).json({ msg: "Please input oldPassword." });
       }
+
       if (!newPassword) {
         return res.status(400).json({ msg: "Please input newPassword." });
       }
@@ -310,18 +321,21 @@ class UserController {
       if (!phone) {
         return res.status(400).json({ msg: "Please input phone." });
       }
+
       if (!newPassword) {
         return res.status(400).json({ msg: "Please input newPassword." });
       }
+
       const salt = await bcryptjs.genSalt(parseInt(SALT_I));
       const pwd = await bcryptjs.hash(newPassword, salt);
+
       const user = await User.findOneAndUpdate(
         { phone },
         { password: pwd },
         { new: true }
       );
 
-      if(!user) {
+      if (!user) {
         return res.status(400).json({ msg: "your phone number is not exist." });
       }
 
@@ -331,6 +345,38 @@ class UserController {
       res.status(400).json({ msg: "Something Wrong.", err });
     }
   }
+  static async forgotPasswordUser(req, res) {
+    try {
+      const { newPassword, phone } = req.body;
+
+      if (!phone) {
+        return res.status(400).json({ msg: "Please input phone." });
+      }
+
+      if (!newPassword) {
+        return res.status(400).json({ msg: "Please input newPassword." });
+      }
+
+      const salt = await bcryptjs.genSalt(parseInt(SALT_I));
+      const pwd = await bcryptjs.hash(newPassword, salt);
+
+      const user = await User.findOneAndUpdate(
+        { phone, auth: "general" },
+        { password: pwd },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(400).json({ msg: "your phone number is not exist." });
+      }
+
+      res.status(200).json({ msg: "Update password success.", user });
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ msg: "Something Wrong.", err });
+    }
+  }
+
   static async upgradeUser(req, res) {
     try {
       const _id = req.params._id;

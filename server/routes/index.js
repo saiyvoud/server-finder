@@ -35,10 +35,11 @@ route.post("/user/sign-up/general", UserController.registerUser);
 route.post("/user/login/general", UserController.logInUser);
 route.post("/user/login/admin", UserController.logInAdmin);
 route.post("/user/logout", auth, UserController.logOut);
-route.put("/user/update", auth, admin, UserController.updateUser);
+route.put("/user/update", auth, UserController.updateUser);
 route.post("/upgrade-user/:_id", auth, admin, UserController.upgradeUser);
 route.put("/user/edit-password", auth, UserController.editPassword);
 route.put("/user/forgot-password", UserController.forgotPassword);
+route.put("/user/forgot-password/general", UserController.forgotPasswordUser);
 
 //Upload Image
 route.put("/user/upload-image", auth, ImageController.uploadUserImage);
