@@ -16,6 +16,7 @@ import OrderController from "../controllers/order.controller.js";
 import PaymentController from "../controllers/payment.controller.js";
 import NotifController from "../controllers/notification.controller.js";
 import TagController from "../controllers/tag.controller.js";
+import MenuController from "../controllers/menu.controller.js";
 import UpdateController from "../controllers/update.controller.js";
 
 // ================ import middleware ================
@@ -82,6 +83,11 @@ route.post("/tag", auth, admin, TagController.addTag);
 route.put("/tag", auth, admin, TagController.updateTag);
 route.delete("/tag/:_id", auth, admin, TagController.deleteTag);
 
+// ================== Menu =====================
+route.get("/menus", auth,  MenuController.getAllMenu);
+route.post("/menu", auth,  MenuController.addMenu);
+route.put("/menu", auth, admin, MenuController.updateMenu);
+route.delete("/menu/:_id", auth, MenuController.deleteMenu);
 // ================== Service =====================
 route.get("/services", ServiceController.getServiceAll);
 route.get("/service/:_id", ServiceController.getServiceById);
