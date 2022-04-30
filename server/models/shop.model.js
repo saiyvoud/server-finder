@@ -55,6 +55,15 @@ const shopSchema = mongoose.Schema(
       lat: Number,
       lng: Number,
     },
+    locations: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: [Number],
+      // required:true
+    },
     openTime: {
       type: String,
       maxlength: 15,
@@ -86,6 +95,8 @@ const shopSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+shopSchema.index({ locations: "2dsphere" })
 
 const Shop = mongoose.model("Shop", shopSchema);
 

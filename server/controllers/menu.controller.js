@@ -11,14 +11,13 @@ export default class  Menu {
     }
   }
 
- 
-
   static async addMenu(req, res) {
     try {
       const { name, category,  imgFile } = req.body;
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
       }
+
       if (!category) {
         return res.status(400).json({ msg: "please input category." });
       }

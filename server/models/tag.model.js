@@ -19,6 +19,10 @@ const tagSchema = mongoose.Schema({
     type: String,
     default: ''
   },
+  icon:{
+    type: String,
+    default: ''
+  },
   isDelete: {
     type: Boolean,
     default: 0,

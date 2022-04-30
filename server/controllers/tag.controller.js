@@ -23,7 +23,7 @@ export default class Tag {
 
   static async addTag(req, res) {
     try {
-      const { name, category, tag_type, imgFile } = req.body;
+      const { name, category, tag_type, imgFile, iconFile } = req.body;
       if (!name) {
         return res.status(400).json({ msg: "please input name." });
       }
@@ -37,9 +37,20 @@ export default class Tag {
         return res.status(400).json({ msg: "please input imgFile." });
       }
 
-      const imgUrl = await UploadImage(imgFile);
+      if (!iconFile) {
+        return res.status(400).json({ msg: "please input iconFile." });
+      }
 
-      const tag = await TagModel.create({ name, category, tag_type, image: imgUrl });
+      const imgUrl = await UploadImage(imgFile);
+      const iconUrl = await UploadImage(iconFile);
+
+      const tag = await TagModel.create({
+        name,
+        category,
+        tag_type,
+        image: imgUrl,
+        icon: iconUrl,
+      });
 
       res.status(201).json({ msg: "Create new tag.", tag });
     } catch (err) {
@@ -50,7 +61,8 @@ export default class Tag {
 
   static async updateTag(req, res) {
     try {
-      const { tag_id, name, tag_type, imgFile, oldImg } = req.body;
+      const { tag_id, name, tag_type, imgFile, oldImg, iconFile, oldIcon } =
+        req.body;
 
       if (!tag_id) {
         return res.status(400).json({ msg: "tag_id can not be null" });
@@ -61,20 +73,30 @@ export default class Tag {
       if (!tag_type) {
         return res.status(400).json({ msg: "please input tag_type." });
       }
-      if (!imgFile) {
-        return res.status(400).json({ msg: "please input imgFile." });
+      if ((imgFile && !oldImg) || (!imgFile && oldImg)) {
+        return res.status(400).json({ msg: "please input imgFile or oldImg." });
+      }
+      
+      if ((!iconFile && oldIcon)||(iconFile && !oldIcon)) {
+        return res
+          .status(400)
+          .json({ msg: "please input iconFile or oldIcon." });
       }
 
       if (!mongoose.isValidObjectId(tag_id))
         return res.status(400).json({ msg: "Invalid ID " + tag_id });
 
-        if(imgFile){
-          var imgUrl = await UploadImage(imgFile, oldImg);
-        }
+      if (imgFile) {
+        var imgUrl = await UploadImage(imgFile, oldImg);
+      }
+
+      if (iconFile) {
+        var iconUrl = await UploadImage(iconFile, oldIcon);
+      }
 
       const tag = await TagModel.findByIdAndUpdate(
-        tag_id ,
-        { name, tag_type, image: imgUrl },
+        tag_id,
+        { name, tag_type, image: imgUrl, icon: iconUrl },
         { new: true }
       );
       res.status(201).json({ msg: "Update tag complete", tag });

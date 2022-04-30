@@ -7,17 +7,107 @@ import { User } from "../models/user.model.js";
 import Notification from "./notification.controller.js";
 
 export default class Shop {
+  static async locTest(req, res) {
+    const Schema = mongoose.Schema;
+    try {
+      var infoSchema = new Schema({
+        description: String,
+      });
+
+      var shapeSchema = new Schema({
+        amenity: String,
+        shape: {
+          type: { type: String },
+          coordinates: [],
+        },
+        info: { type: Schema.Types.ObjectId, ref: "Info" },
+      });
+      shapeSchema.index({ shape: "2dsphere" });
+
+      var Shape = mongoose.model("Shape", shapeSchema);
+      var Info = mongoose.model("Info", infoSchema);
+
+      // Shape.create({
+      //   "amenity": "String",
+      //   "shape": {
+      //     "type": "Point",
+      //     "coordinates": [4,6]
+      //   },
+      // })
+
+      const s = await Shape.find({
+        shape: {
+          $nearSphere: {
+            $geometry: {
+              type: "Point",
+              coordinates: [6, 10],
+            },
+          },
+        },
+      });
+      res.json({ s });
+    } catch (error) {
+      console.log(error);
+      res.json(error);
+    }
+  }
+
   static async AllShop(req, res) {
     try {
-      const shop = await ShopModel.find({})
-        .sort({ _id: -1 })
-        .populate([
-          { path: "user", select: "firstname lastname phone" },
-          { path: "bankAccount" },
-        ]);
+      // const shops = await ShopModel.aggregate([
+      //    {
+      //     $geoNear: {
+      //       near: {
+      //         type: "Point",
+      //         coordinates: [2, 4],
+      //       },
+      //       spherical: true,
+      //       distanceField: "dis",
+      //     },
+      //   },
+      //   { $skip: 0 },
+      //   { $limit: 2 },
+      // ]);
+      const shop = await ShopModel.find({
+        locations: {
+          // $geoNear: {
+          //   near: {
+          //     type: "Point",
+          //     coordinates: [2, 4],
+          //   },
+          //   spherical: true,
+          //   distanceField: "dis",
+          // },
+          $nearSphere: {
+            $geometry: {
+              type: "Point",
+              coordinates: [req.body.lat, req.body.lng],
+            },
+          },
+          // spherical: true,
+          // distanceField: "dis",
+        },
+        // location: {
+        //   $geoNear: {
+        //     near: {
+        //       type: "Point",
+        //       coordinates: [req.body.lat, req.body.lng],
+        //     },
+        //     spherical: true,
+        //     distanceField: "dis",
+        //   },
+        // },
+      });
+      // .sort({ _id: -1 })
+      // .populate([
+      //   { path: "user", select: "firstname lastname phone" },
+      //   { path: "bankAccount" },
+      // ]);
       // .skip(3).limit(2);
+
       res.status(200).json({ msg: "Success", shop });
     } catch (err) {
+      console.log("err", err);
       res.status(500).json({ msg: "Something went wrong", err });
     }
   }
@@ -125,6 +215,17 @@ export default class Shop {
         return res.status(400).json({ msg: "please input lng" });
       }
 
+      if (req.user.auth === "admin") {
+        if (!mongoose.isValidObjectId(req.body.user_id))
+          return res
+            .status(400)
+            .json({ msg: `Invalid id: ${req.body.user_id}` });
+        if (!req.body.user_id) {
+          return res.status(400).json({ msg: "please input user_id" });
+        }
+        user_id = req.body.user_id;
+      }
+
       const chkExist = await ShopModel.findOne({ user: user_id });
       if (chkExist)
         return res.status(400).json({ msg: "you are already have shop." });
@@ -154,13 +255,7 @@ export default class Shop {
         var bank_id = banks._id;
       }
 
-      if (req.user.auth === "admin") {
-        if (!mongoose.isValidObjectId(data.user_id))
-          return res.status(400).json({ msg: `Invalid id: ${data.user_id}` });
-        user_id = data.user_id;
-      }
-
-      const data = {
+      const data = await {
         user: user_id,
         name,
         category,
@@ -179,6 +274,9 @@ export default class Shop {
         bankAccount: bank_id,
         image: imgUrl,
         coverImage: coverImgUrl,
+        locations: {
+          coordinates: [lat, lng],
+        },
       };
 
       const shop = await ShopModel.create(data);

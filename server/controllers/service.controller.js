@@ -8,7 +8,7 @@ export default class Service {
   static async getServiceAll(req, res) {
     try {
       const service = await ServiceModel.find({})
-        .populate([
+        .populate(
           {
             path: "shop",
             select: "name phone address location openTime closeTime",
@@ -16,8 +16,49 @@ export default class Service {
           },
           {
             path: "tag",
-            select: "name category tag_type image",
+            select: "name category tag_type image icon",
+          }
+        )
+        .sort({ _id: -1 });
+      res.status(200).json({ service });
+    } catch (err) {
+      console.log("err=>", err);
+      res.status(404).json({ msg: "Something Wrong.", err });
+    }
+  }
+  static async getServiceByMenu(req, res) {
+    try {
+      // const s = ServiceModel.find({name: new RegExp('', 'i') }).limit(5);
+      const { name, lat, lng } = req.body;
+
+      console.log("query", req.query.name);
+
+      const nameRegex = new RegExp(name, "i");
+
+      const service = await ServiceModel.find({})
+        .populate([
+          {
+            path: "shop",
+            select: "name phone address location openTime closeTime",
+            model: "Shop",
+            match: {
+              location: {
+                $geoNear: {
+                  near: {
+                    type: "Point",
+                    coordinates: [2, 4],
+                  },
+                  spherical: true,
+                  distanceField: "dis",
+                },
+              },
+            },
           },
+          // {
+          //   path: "tag",
+          //   select: "name category tag_type image",
+          //   match: { name: nameRegex },
+          // },
         ])
         .sort({ _id: -1 });
       res.status(200).json({ service });
@@ -32,10 +73,10 @@ export default class Service {
       if (!mongoose.isValidObjectId(_id))
         return res.status(400).json({ msg: `Invalid id: ${_id}` });
 
-      const service = await ServiceModel.find({ shop: _id, isDelete:false })
+      const service = await ServiceModel.find({ shop: _id, isDelete: false })
         .populate({
           path: "tag",
-          select: "name category tag_type image",
+          select: "name category tag_type image icon",
         })
         .sort({
           _id: -1,
@@ -81,7 +122,7 @@ export default class Service {
       if (price < 10000) {
         return res.status(400).json({ msg: "price must be more then 10000." });
       }
-      if (price%1000 != 0) {
+      if (price % 1000 != 0) {
         return res.status(400).json({ msg: "invalid price." });
       }
 
@@ -97,7 +138,7 @@ export default class Service {
         _id: shop_id,
         category: tag.category,
       });
-      
+
       if (!shop) {
         return res
           .status(400)
@@ -107,7 +148,7 @@ export default class Service {
       const chkService = await ServiceModel.findOne({
         shop: shop_id,
         tag: tag_id,
-        isDelete: false
+        isDelete: false,
       });
 
       if (chkService) {
@@ -144,7 +185,7 @@ export default class Service {
       if (price < 10000) {
         return res.status(400).json({ msg: "price must be more then 10000." });
       }
-      if (price%1000 != 0) {
+      if (price % 1000 != 0) {
         return res.status(400).json({ msg: "invalid price." });
       }
       if (!mongoose.isValidObjectId(service_id))

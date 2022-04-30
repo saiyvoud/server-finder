@@ -64,6 +64,7 @@ route.put(
 
 // ================== Shop ============================
 route.get("/shops", ShopController.AllShop);
+route.get("/shops/test", ShopController.locTest);
 route.get("/shop/owner", auth, shopkeeper, ShopController.OwnShop);
 route.post("/shop", auth, ShopController.createShop);
 route.put("/shop", auth, shopkeeper, ShopController.updateShop);
@@ -77,11 +78,11 @@ route.put("/bank", auth, shopkeeper, ShopController.updateBank);
 route.delete("/bank/:_id", auth, shopkeeper, ShopController.deleteBank);
 
 // ================== Tag ==========================
-route.get("/tags", auth, shopkeeper, TagController.getAllTag);
-route.get("/tag/shop/:category", auth, shopkeeper, TagController.getShopTag);
-route.post("/tag", auth, admin, TagController.addTag);
-route.put("/tag", auth, admin, TagController.updateTag);
-route.delete("/tag/:_id", auth, admin, TagController.deleteTag);
+route.get("/tags", /*auth, shopkeeper,*/ TagController.getAllTag);
+route.get("/tag/shop/:category", /*auth, shopkeeper,*/ TagController.getShopTag);
+route.post("/tag", /*auth, admin,*/ TagController.addTag);
+route.put("/tag", /*auth, admin,*/ TagController.updateTag);
+route.delete("/tag/:_id", /*auth, admin,*/ TagController.deleteTag);
 
 // ================== Menu =====================
 route.get("/menus", auth,  MenuController.getAllMenu);
@@ -90,6 +91,7 @@ route.put("/menu", auth, admin, MenuController.updateMenu);
 route.delete("/menu/:_id", auth, MenuController.deleteMenu);
 // ================== Service =====================
 route.get("/services", ServiceController.getServiceAll);
+route.get("/service/by_menu", ServiceController.getServiceByMenu);
 route.get("/service/:_id", ServiceController.getServiceById);
 route.get("/service/shop/:shop_id", ServiceController.getServiceShop);
 route.post("/service", auth, shopkeeper, ServiceController.postService);
