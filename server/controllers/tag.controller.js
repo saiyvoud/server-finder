@@ -21,6 +21,15 @@ export default class Tag {
     }
   }
 
+  static async getMenu(req, res){
+    try {
+      const menu = await TagModel.find({ isDelete: false }).distinct('name');
+      res.status(200).json({ msg: "Get all menu", menu });
+    } catch (err) {
+      res.status(404).json({ msg: "Something wrong", err });
+    }
+  }
+
   static async addTag(req, res) {
     try {
       const { name, category, tag_type, imgFile, iconFile } = req.body;

@@ -83,6 +83,7 @@ route.get("/tag/shop/:category", /*auth, shopkeeper,*/ TagController.getShopTag)
 route.post("/tag", /*auth, admin,*/ TagController.addTag);
 route.put("/tag", /*auth, admin,*/ TagController.updateTag);
 route.delete("/tag/:_id", /*auth, admin,*/ TagController.deleteTag);
+route.get("/tag/menu", TagController.getMenu);
 
 // ================== Menu =====================
 route.get("/menus", auth,  MenuController.getAllMenu);
